@@ -105,9 +105,9 @@ export default function Applications() {
                             <div
                                 key={application.id}
                                 onClick={() => setSelectedApplication(application)}
-                                className={`p-4 m-2 rounded-lg border cursor-pointer transition-all bg-white/60 hover:bg-white/80 shadow-lg hover:shadow-xl ${
+                                className={`p-4 m-2 rounded-lg border cursor-pointer transition-all bg-white hover:bg-white shadow-lg hover:shadow-xl ${
                                     selectedApplication?.id === application.id
-                                        ? 'border-blue-500 ring-2 ring-blue-500 bg-white/60 shadow-xl'
+                                        ? 'border-blue-500 ring-2 ring-blue-500 bg-white shadow-xl'
                                         : 'border-gray-200 hover:border-blue-300'
                                 }`}
                             >
@@ -132,7 +132,7 @@ export default function Applications() {
                 </div>
 
                 {/* Details panel */}
-                <div className="w-2/3 m-2 bg-white/60 rounded-lg border border-gray-200 p-6 overflow-y-auto shadow-2xl">
+                <div className="w-2/3 m-2 bg-white rounded-lg border border-gray-200 p-6 overflow-y-auto shadow-2xl">
                     {selectedApplication ? (
                         <div>
                             <div className="flex justify-between items-start mb-6">
