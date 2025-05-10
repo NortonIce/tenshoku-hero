@@ -1,5 +1,20 @@
+import { Application } from "@/app/types/Applications"
+
 export default function Applications() {
 
+    const applications: Application[] = [
+        {
+            id: "string",
+    jobSite: "string",
+    recruiter: "string",
+    company: "string",
+    applicationDate: "string",
+    status: "string",
+    createdAt: "string",
+    resume: "string",
+    coverLetter: "string",
+        }
+    ]
     
 
 

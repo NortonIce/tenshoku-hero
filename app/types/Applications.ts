@@ -6,4 +6,7 @@ export type Application = {
     applicationDate: string;
     status: string;
     createdAt: string;
+    resume: string;
+    coverLetter: string;
+    
 }
