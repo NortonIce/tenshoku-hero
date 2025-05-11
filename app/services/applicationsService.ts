@@ -1,70 +1,122 @@
-import { Application } from "@/app/types/Applications";
+import connectDB from '@/lib/db/mongodb';
+import Application from '@/lib/db/models/Application';
+import { Application as ApplicationType } from '@/types/Applications';
+import { ApplicationNotFoundError, UnauthorizedError, ValidationError } from './errors';
 
-const mockApplications: Application[] = [
-    {
-        id: "1",
-        jobSite: "LinkedIn",
-        recruiter: "John Smith",
-        company: "Google",
-        applicationDate: "2024-03-15",
-        status: "Applied",
-        createdAt: "2024-03-15",
-        resume: "resume1.pdf",
-        coverLetter: "cover1.pdf",
-    },
-    {
-        id: "2",
-        jobSite: "Indeed",
-        recruiter: "Sarah Johnson",
-        company: "Microsoft",
-        applicationDate: "2024-03-14",
-        status: "Interview",
-        createdAt: "2024-03-14",
-        resume: "resume2.pdf",
-        coverLetter: "cover2.pdf",
-    },
-    {
-        id: "3",
-        jobSite: "Company Website",
-        recruiter: "Mike Brown",
-        company: "Amazon",
-        applicationDate: "2024-03-13",
-        status: "Rejected",
-        createdAt: "2024-03-13",
-        resume: "resume3.pdf",
-        coverLetter: "cover3.pdf",
-    },
-
-];
-
-export const getApplications = async (): Promise<Application[]> => {
-    return [...mockApplications];
-}
-
-export const addApplication = async (application: Application): Promise<Application> => {
-    mockApplications.push(application);
-    return application;
-}
-
-export const updateApplication = async (id: string, updates: Partial<Application>): Promise<Application> => {
-    const index = mockApplications.findIndex(app => app.id === id);
-    if (index === -1) {
-        throw new Error('Application not found');
+export async function getApplications(userId: string): Promise<ApplicationType[]> {
+    if (!userId) {
+        throw new UnauthorizedError();
     }
 
-    mockApplications[index] = {
-        ...mockApplications[index],
-        ...updates,
+    await connectDB();
+    const applications = await Application.find({ userId }).sort({ createdAt: -1 });
+    return applications.map(app => ({
+        id: app._id.toString(),
+        company: app.company,
+        jobSite: app.jobSite,
+        status: app.status,
+        applicationDate: app.applicationDate.toISOString(),
+        createdAt: app.createdAt.toISOString(),
+        resume: app.resume,
+        coverLetter: app.coverLetter,
+        recruiter: app.recruiter,
+    }));
+}
+
+export async function addApplication(application: Omit<ApplicationType, 'id' | 'createdAt'>, userId: string): Promise<ApplicationType> {
+    if (!userId) {
+        throw new UnauthorizedError();
+    }
+
+    // Validate required fields
+    if (!application.company || !application.jobSite || !application.status || !application.applicationDate) {
+        throw new ValidationError('Missing required fields: company, jobSite, status, and applicationDate are required');
+    }
+
+    // Validate status
+    const validStatuses = ['Applied', 'Take home assignment', 'Interview', 'Rejected', 'Offer'];
+    if (!validStatuses.includes(application.status)) {
+        throw new ValidationError(`Invalid status. Must be one of: ${validStatuses.join(', ')}`);
+    }
+
+    await connectDB();
+    const newApplication = await Application.create({
+        ...application,
+        userId,
+        applicationDate: new Date(application.applicationDate),
+    });
+
+    return {
+        id: newApplication._id.toString(),
+        company: newApplication.company,
+        jobSite: newApplication.jobSite,
+        status: newApplication.status,
+        applicationDate: newApplication.applicationDate.toISOString(),
+        createdAt: newApplication.createdAt.toISOString(),
+        resume: newApplication.resume,
+        coverLetter: newApplication.coverLetter,
+        recruiter: newApplication.recruiter,
     };
-
-    return mockApplications[index];
 }
 
-export const deleteApplication = async (id: string): Promise<void> => {
-    const index = mockApplications.findIndex(app => app.id === id);
-    if (index === -1) {
-        throw new Error('Application not found');
+export async function updateApplication(id: string, application: Partial<ApplicationType>, userId: string): Promise<ApplicationType> {
+    if (!userId) {
+        throw new UnauthorizedError();
     }
 
-    mockApplications.splice(index, 1);
+    if (!id) {
+        throw new ValidationError('Application ID is required');
+    }
+
+    // Validate status if provided
+    if (application.status) {
+        const validStatuses = ['Applied', 'Take home assignment', 'Interview', 'Rejected', 'Offer'];
+        if (!validStatuses.includes(application.status)) {
+            throw new ValidationError(`Invalid status. Must be one of: ${validStatuses.join(', ')}`);
+        }
+    }
+
+    await connectDB();
+    const updatedApplication = await Application.findOneAndUpdate(
+        { _id: id, userId },
+        { 
+            ...application,
+            ...(application.applicationDate && { applicationDate: new Date(application.applicationDate) }),
+            updatedAt: new Date(),
+        },
+        { new: true }
+    );
+
+    if (!updatedApplication) {
+        throw new ApplicationNotFoundError(id);
+    }
+
+    return {
+        id: updatedApplication._id.toString(),
+        company: updatedApplication.company,
+        jobSite: updatedApplication.jobSite,
+        status: updatedApplication.status,
+        applicationDate: updatedApplication.applicationDate.toISOString(),
+        createdAt: updatedApplication.createdAt.toISOString(),
+        resume: updatedApplication.resume,
+        coverLetter: updatedApplication.coverLetter,
+        recruiter: updatedApplication.recruiter,
+    };
+}
+
+export async function deleteApplication(id: string, userId: string): Promise<void> {
+    if (!userId) {
+        throw new UnauthorizedError();
+    }
+
+    if (!id) {
+        throw new ValidationError('Application ID is required');
+    }
+
+    await connectDB();
+    const result = await Application.findOneAndDelete({ _id: id, userId });
+    
+    if (!result) {
+        throw new ApplicationNotFoundError(id);
+    }
 }

@@ -1,0 +1,11 @@
+export type Application = {
+    id: string;
+    company: string;
+    jobSite: string;
+    status: 'Applied' | 'Take home assignment' | 'Interview' | 'Rejected' | 'Offer';
+    applicationDate: string;
+    createdAt: string;
+    resume?: string;
+    coverLetter?: string;
+    recruiter?: string;
+}

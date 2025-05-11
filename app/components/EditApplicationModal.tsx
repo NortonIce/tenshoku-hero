@@ -1,47 +1,39 @@
 import { Application } from "@/types/Applications";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 type ApplicationStatus = Application['status'];
 
-interface AddApplicationModalProps {
+interface EditApplicationModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSubmit: (application: Omit<Application, 'id' | 'createdAt'>) => void;
+    onSubmit: (application: Application) => void;
+    application: Application | null;
 }
 
-export default function AddApplicationModal({ isOpen, onClose, onSubmit }: AddApplicationModalProps) {
-    const [newApplication, setNewApplication] = useState({
-        company: '',
-        jobSite: '',
-        recruiter: '',
-        status: 'Applied' as ApplicationStatus,
-        resume: '',
-        coverLetter: '',
-        applicationDate: new Date().toISOString().split('T')[0]
-    });
+export default function EditApplicationModal({ isOpen, onClose, onSubmit, application }: EditApplicationModalProps) {
+    const [editedApplication, setEditedApplication] = useState<Application | null>(null);
+
+    useEffect(() => {
+        if (application) {
+            setEditedApplication(application);
+        }
+    }, [application]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        onSubmit(newApplication);
-        setNewApplication({
-            company: '',
-            jobSite: '',
-            recruiter: '',
-            status: 'Applied' as ApplicationStatus,
-            resume: '',
-            coverLetter: '',
-            applicationDate: new Date().toISOString().split('T')[0]
-        });
+        if (editedApplication) {
+            onSubmit(editedApplication);
+        }
     };
 
-    if (!isOpen) return null;
+    if (!isOpen || !editedApplication) return null;
 
     return (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-[1px] flex items-center justify-center z-50">
             <div className="bg-white/90 backdrop-blur-[1px] rounded-xl shadow-lg w-full max-w-2xl mx-4">
                 <div className="p-6">
                     <div className="flex justify-between items-center mb-6">
-                        <h2 className="text-2xl font-bold text-gray-900">Add New Application</h2>
+                        <h2 className="text-2xl font-bold text-gray-900">Edit Application</h2>
                         <button 
                             onClick={onClose}
                             className="text-gray-500 hover:text-gray-700"
@@ -56,8 +48,8 @@ export default function AddApplicationModal({ isOpen, onClose, onSubmit }: AddAp
                             <label className="block text-sm font-medium text-gray-700">Company</label>
                             <input
                                 type="text"
-                                value={newApplication.company}
-                                onChange={(e) => setNewApplication({...newApplication, company: e.target.value})}
+                                value={editedApplication.company}
+                                onChange={(e) => setEditedApplication({...editedApplication, company: e.target.value})}
                                 className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                 required
                             />
@@ -66,8 +58,8 @@ export default function AddApplicationModal({ isOpen, onClose, onSubmit }: AddAp
                             <label className="block text-sm font-medium text-gray-700">Job Site</label>
                             <input
                                 type="text"
-                                value={newApplication.jobSite}
-                                onChange={(e) => setNewApplication({...newApplication, jobSite: e.target.value})}
+                                value={editedApplication.jobSite}
+                                onChange={(e) => setEditedApplication({...editedApplication, jobSite: e.target.value})}
                                 className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                 required
                             />
@@ -76,8 +68,8 @@ export default function AddApplicationModal({ isOpen, onClose, onSubmit }: AddAp
                             <label className="block text-sm font-medium text-gray-700">Recruiter</label>
                             <input
                                 type="text"
-                                value={newApplication.recruiter}
-                                onChange={(e) => setNewApplication({...newApplication, recruiter: e.target.value})}
+                                value={editedApplication.recruiter || ''}
+                                onChange={(e) => setEditedApplication({...editedApplication, recruiter: e.target.value})}
                                 className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                             />
                         </div>
@@ -85,8 +77,8 @@ export default function AddApplicationModal({ isOpen, onClose, onSubmit }: AddAp
                             <label className="block text-sm font-medium text-gray-700">Application Date</label>
                             <input
                                 type="date"
-                                value={newApplication.applicationDate}
-                                onChange={(e) => setNewApplication({...newApplication, applicationDate: e.target.value})}
+                                value={editedApplication.applicationDate.split('T')[0]}
+                                onChange={(e) => setEditedApplication({...editedApplication, applicationDate: e.target.value})}
                                 className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                 required
                             />
@@ -94,8 +86,8 @@ export default function AddApplicationModal({ isOpen, onClose, onSubmit }: AddAp
                         <div>
                             <label className="block text-sm font-medium text-gray-700">Status</label>
                             <select
-                                value={newApplication.status}
-                                onChange={(e) => setNewApplication({...newApplication, status: e.target.value as ApplicationStatus})}
+                                value={editedApplication.status}
+                                onChange={(e) => setEditedApplication({...editedApplication, status: e.target.value as ApplicationStatus})}
                                 className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                             >
                                 <option value="Applied">Applied</option>
@@ -109,16 +101,16 @@ export default function AddApplicationModal({ isOpen, onClose, onSubmit }: AddAp
                             <label className="block text-sm font-medium text-gray-700">Resume</label>
                             <input
                                 type="text"
-                                value={newApplication.resume}
-                                onChange={(e) => setNewApplication({...newApplication, resume: e.target.value})}
+                                value={editedApplication.resume || ''}
+                                onChange={(e) => setEditedApplication({...editedApplication, resume: e.target.value})}
                                 className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                             />
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700">Cover Letter</label>
                             <textarea
-                                value={newApplication.coverLetter}
-                                onChange={(e) => setNewApplication({...newApplication, coverLetter: e.target.value})}
+                                value={editedApplication.coverLetter || ''}
+                                onChange={(e) => setEditedApplication({...editedApplication, coverLetter: e.target.value})}
                                 rows={4}
                                 className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                             />
@@ -135,7 +127,7 @@ export default function AddApplicationModal({ isOpen, onClose, onSubmit }: AddAp
                                 type="submit"
                                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                             >
-                                Add Application
+                                Save Changes
                             </button>
                         </div>
                     </form>

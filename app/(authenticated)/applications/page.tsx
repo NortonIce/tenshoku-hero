@@ -2,13 +2,15 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Application } from '@/app/types/Applications';
+import { Application } from '@/types/Applications';
 import AddApplicationModal from '@/app/components/AddApplicationModal';
+import EditApplicationModal from '@/app/components/EditApplicationModal';
 
 export default function Applications() {
     const [applications, setApplications] = useState<Application[]>([]);
     const [selectedApplication, setSelectedApplication] = useState<Application | null>(null);
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -57,9 +59,35 @@ export default function Applications() {
 
             const addedApplication = await response.json();
             setApplications(prev => [...prev, addedApplication]);
-            setIsModalOpen(false);
+            setIsAddModalOpen(false);
         } catch (err) {
             console.error('Error adding application:', err);
+            // You might want to show an error message to the user here
+        }
+    };
+
+    const handleEditApplication = async (application: Application) => {
+        try {
+            const response = await fetch('/api/applications', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(application),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to update application');
+            }
+
+            const updatedApplication = await response.json();
+            setApplications(prev => prev.map(app => 
+                app.id === updatedApplication.id ? updatedApplication : app
+            ));
+            setSelectedApplication(updatedApplication);
+            setIsEditModalOpen(false);
+        } catch (err) {
+            console.error('Error updating application:', err);
             // You might want to show an error message to the user here
         }
     };
@@ -85,7 +113,7 @@ export default function Applications() {
             {/* Header */}
             <div className="flex m-2 justify-between items-center">
                 <button
-                    onClick={() => setIsModalOpen(true)}
+                    onClick={() => setIsAddModalOpen(true)}
                     className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-2"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -140,7 +168,10 @@ export default function Applications() {
                                     <p className="text-gray-600">{selectedApplication.jobSite}</p>
                                 </div>
                                 <div className="flex gap-2">
-                                    <button className="px-4 py-2 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors">
+                                    <button 
+                                        onClick={() => setIsEditModalOpen(true)}
+                                        className="px-4 py-2 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors"
+                                    >
                                         Edit
                                     </button>
                                     <button className="px-4 py-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors">
@@ -182,9 +213,16 @@ export default function Applications() {
             </div>
 
             <AddApplicationModal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
+                isOpen={isAddModalOpen}
+                onClose={() => setIsAddModalOpen(false)}
                 onSubmit={handleAddApplication}
+            />
+
+            <EditApplicationModal
+                isOpen={isEditModalOpen}
+                onClose={() => setIsEditModalOpen(false)}
+                onSubmit={handleEditApplication}
+                application={selectedApplication}
             />
         </div>
     );
