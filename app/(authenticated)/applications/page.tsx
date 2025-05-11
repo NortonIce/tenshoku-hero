@@ -83,8 +83,7 @@ export default function Applications() {
     return (
         <div className="h-screen flex flex-col">
             {/* Header */}
-            <div className="flex m-2 justify-between items-center mb-8">
-                <h1 className="text-2xl font-bold">Applications</h1>
+            <div className="flex m-2 justify-between items-center">
                 <button
                     onClick={() => setIsModalOpen(true)}
                     className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-2"

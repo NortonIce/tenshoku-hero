@@ -1,4 +1,5 @@
 import Navbar from '../components/Navbar';
+import TopBar from '../components/TopBar';
 
 export default function AuthenticatedLayout({
   children,
@@ -9,6 +10,7 @@ export default function AuthenticatedLayout({
     <div className="flex min-h-screen">
       <Navbar />
       <main className="flex-1">
+        <TopBar />
         {children}
       </main>
     </div>
