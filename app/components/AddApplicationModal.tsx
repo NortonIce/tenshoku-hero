@@ -1,4 +1,4 @@
-import { Application } from "@/types/Applications";
+import { Application } from "@/types/Application";
 import { useState } from "react";
 
 type ApplicationStatus = Application['status'];
@@ -12,6 +12,7 @@ interface AddApplicationModalProps {
 export default function AddApplicationModal({ isOpen, onClose, onSubmit }: AddApplicationModalProps) {
     const [newApplication, setNewApplication] = useState({
         company: '',
+        position: '',
         jobSite: '',
         recruiter: '',
         status: 'Applied' as ApplicationStatus,
@@ -25,6 +26,7 @@ export default function AddApplicationModal({ isOpen, onClose, onSubmit }: AddAp
         onSubmit(newApplication);
         setNewApplication({
             company: '',
+            position: '',
             jobSite: '',
             recruiter: '',
             status: 'Applied' as ApplicationStatus,
@@ -58,6 +60,16 @@ export default function AddApplicationModal({ isOpen, onClose, onSubmit }: AddAp
                                 type="text"
                                 value={newApplication.company}
                                 onChange={(e) => setNewApplication({...newApplication, company: e.target.value})}
+                                className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">Position</label>
+                            <input
+                                type="text"
+                                value={newApplication.position}
+                                onChange={(e) => setNewApplication({...newApplication, position: e.target.value})}
                                 className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                 required
                             />

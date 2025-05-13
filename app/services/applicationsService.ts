@@ -1,6 +1,6 @@
 import connectDB from '@/lib/db/mongodb';
 import Application from '@/lib/db/models/Application';
-import { Application as ApplicationType } from '@/types/Applications';
+import { Application as ApplicationType } from '@/types/Application';
 import { ApplicationNotFoundError, UnauthorizedError, ValidationError } from './errors';
 
 export async function getApplications(userId: string): Promise<ApplicationType[]> {
@@ -13,6 +13,7 @@ export async function getApplications(userId: string): Promise<ApplicationType[]
     return applications.map(app => ({
         id: app._id.toString(),
         company: app.company,
+        position: app.position,
         jobSite: app.jobSite,
         status: app.status,
         applicationDate: app.applicationDate.toISOString(),
@@ -29,8 +30,8 @@ export async function addApplication(application: Omit<ApplicationType, 'id' | '
     }
 
     // Validate required fields
-    if (!application.company || !application.jobSite || !application.status || !application.applicationDate) {
-        throw new ValidationError('Missing required fields: company, jobSite, status, and applicationDate are required');
+    if (!application.company || !application.position || !application.jobSite || !application.status || !application.applicationDate) {
+        throw new ValidationError('Missing required fields: company, position, jobSite, status, and applicationDate are required');
     }
 
     // Validate status
@@ -49,6 +50,7 @@ export async function addApplication(application: Omit<ApplicationType, 'id' | '
     return {
         id: newApplication._id.toString(),
         company: newApplication.company,
+        position: newApplication.position,
         jobSite: newApplication.jobSite,
         status: newApplication.status,
         applicationDate: newApplication.applicationDate.toISOString(),
@@ -94,6 +96,7 @@ export async function updateApplication(id: string, application: Partial<Applica
     return {
         id: updatedApplication._id.toString(),
         company: updatedApplication.company,
+        position: updatedApplication.position,
         jobSite: updatedApplication.jobSite,
         status: updatedApplication.status,
         applicationDate: updatedApplication.applicationDate.toISOString(),

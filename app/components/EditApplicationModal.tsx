@@ -1,4 +1,4 @@
-import { Application } from "@/types/Applications";
+import { Application } from "@/types/Application";
 import { useState, useEffect } from "react";
 
 type ApplicationStatus = Application['status'];
@@ -15,12 +15,19 @@ export default function EditApplicationModal({ isOpen, onClose, onSubmit, applic
 
     useEffect(() => {
         if (application) {
-            setEditedApplication(application);
+            setEditedApplication({
+                ...application,
+                position: application.position || '',
+                recruiter: application.recruiter || '',
+                resume: application.resume || '',
+                coverLetter: application.coverLetter || ''
+            });
         }
     }, [application]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        console.log(editedApplication);
         if (editedApplication) {
             onSubmit(editedApplication);
         }
@@ -50,6 +57,16 @@ export default function EditApplicationModal({ isOpen, onClose, onSubmit, applic
                                 type="text"
                                 value={editedApplication.company}
                                 onChange={(e) => setEditedApplication({...editedApplication, company: e.target.value})}
+                                className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">Position</label>
+                            <input
+                                type="text"
+                                value={editedApplication.position}
+                                onChange={(e) => setEditedApplication({...editedApplication, position: e.target.value})}
                                 className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                 required
                             />

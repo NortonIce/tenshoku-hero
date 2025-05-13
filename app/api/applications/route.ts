@@ -73,8 +73,9 @@ export async function PUT(request: Request) {
                 { status: 401 }
             );
         }
-
+        
         const { id, ...updates } = await request.json();
+        console.log('PUT request received', id, updates);
         const updatedApplication = await updateApplication(id, updates, session.user.id);
         return NextResponse.json(updatedApplication);
     } catch (error) {

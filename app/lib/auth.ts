@@ -41,17 +41,14 @@ export const authOptions: AuthOptions = {
             return true;
         },
         async jwt({ token, user, account }) {
-            console.log('JWT callback - Initial token:', token);
-            console.log('JWT callback - User:', user);
-            console.log('JWT callback - Account:', account);
 
             try {
                 await connectDB();
                 const dbUser = await User.findOne({ email: token.email });
-                console.log('JWT callback - Found user in DB:', dbUser);
+                
                 if (dbUser) {
                     token.id = dbUser._id.toString();
-                    console.log('JWT callback - Updated token:', token);
+                    
                 }
             } catch (error) {
                 console.error("Error in jwt callback:", error);

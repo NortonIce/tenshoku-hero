@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Application } from '@/types/Applications';
+import { Application } from '@/types/Application';
 import AddApplicationModal from '@/app/components/AddApplicationModal';
 import EditApplicationModal from '@/app/components/EditApplicationModal';
 
@@ -67,6 +67,7 @@ export default function Applications() {
     };
 
     const handleEditApplication = async (application: Application) => {
+        console.log('Editing application:', application);
         try {
             const response = await fetch('/api/applications', {
                 method: 'PUT',
@@ -139,7 +140,10 @@ export default function Applications() {
                                 }`}
                             >
                                 <div className="flex justify-between items-start mb-2">
-                                    <h3 className="font-semibold">{application.company}</h3>
+                                    <div>
+                                        <h3 className="font-semibold">{application.company}</h3>
+                                        <p className="text-sm text-gray-600">{application.position}</p>
+                                    </div>
                                     <span className={`px-2 py-1 rounded-full text-sm ${
                                         application.status === 'Applied' ? 'bg-blue-100 text-blue-800' :
                                         application.status === 'Interview' ? 'bg-yellow-100 text-yellow-800' :
@@ -165,6 +169,7 @@ export default function Applications() {
                             <div className="flex justify-between items-start mb-6">
                                 <div>
                                     <h2 className="text-2xl font-bold mb-2">{selectedApplication.company}</h2>
+                                    <p className="text-lg text-gray-700 mb-1">{selectedApplication.position}</p>
                                     <p className="text-gray-600">{selectedApplication.jobSite}</p>
                                 </div>
                                 <div className="flex gap-2">

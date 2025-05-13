@@ -5,6 +5,10 @@ const applicationSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  position: {
+    type: String,
+    required: true,
+  },
   jobSite: {
     type: String,
     required: true,
