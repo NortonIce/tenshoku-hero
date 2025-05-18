@@ -10,7 +10,9 @@
   },
   "dependencies": {
     "@auth/core": "^0.34.2",
+    "@headlessui/react": "^2.2.3",
     "@heroicons/react": "^2.2.0",
+    "googleapis": "^148.0.0",
     "mongodb": "^6.16.0",
     "mongoose": "^8.14.2",
     "next": "15.3.2",
