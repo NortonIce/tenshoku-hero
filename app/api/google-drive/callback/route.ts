@@ -5,7 +5,8 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(req: NextRequest) {
   try {
     const code = req.nextUrl.searchParams.get("code");
-    if (!code) return NextResponse.redirect("http://localhost:3000/resumes");
+    if (!code)
+      return NextResponse.redirect(process.env.WEBSITE_URL + "/resumes");
 
     const oauth2Client = new google.auth.OAuth2(
       process.env.GOOGLE_CLIENT_ID!,
@@ -26,7 +27,7 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    return NextResponse.redirect("http://localhost:3000/resumes");
+    return NextResponse.redirect(process.env.WEBSITE_URL + "/resumes");
   } catch (err) {
     console.error("OAuth callback error:", err);
     return new NextResponse("Internal Server Error", { status: 500 });
