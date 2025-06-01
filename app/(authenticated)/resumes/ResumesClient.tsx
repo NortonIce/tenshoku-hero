@@ -8,6 +8,7 @@ import type { Resume } from "@/types/Resume";
 export default function ResumesClient(props: {
   clientId: string;
   redirectUri: string;
+  isGoogleDriveConnected?: boolean;
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [resumes, setResumes] = useState<Resume[]>([]);
@@ -122,13 +123,23 @@ export default function ResumesClient(props: {
 
   return (
     <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
+      {/* <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold">Your Resumes</h2>
         <IconButton onClick={() => setIsModalOpen(true)}>Add Resume</IconButton>
+      </div> */}
+      <div className="flex justify-start items-center mb-4">
+        <IconButton className="mr-2" onClick={() => setIsModalOpen(true)}>
+          Add Resume
+        </IconButton>
+        <IconButton className="mr-2" onClick={() => handleGoogleDriveAuth()}>
+          Connect to Google Drive
+        </IconButton>
+        {props.isGoogleDriveConnected ? (
+          <span className="text-green-600">Google Drive connected</span>
+        ) : (
+          <span className="text-red-600">Google Drive not connected</span>
+        )}
       </div>
-      <IconButton onClick={() => handleGoogleDriveAuth()}>
-        Authorize Google Drive
-      </IconButton>
       {resumes.length === 0 ? (
         <div className="bg-white rounded-lg shadow p-6 text-center">
           <h3 className="mt-2 text-sm font-semibold text-gray-900">

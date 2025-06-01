@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 const resumeSchema = new mongoose.Schema({
   title: {
@@ -15,7 +15,7 @@ const resumeSchema = new mongoose.Schema({
   },
   userId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    ref: "User",
     required: true,
   },
   createdAt: {
@@ -26,12 +26,16 @@ const resumeSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  applications: {
+    type: Array<String>,
+    default: [],
+  },
 });
 
 // Update the updatedAt timestamp before saving
-resumeSchema.pre('save', function(next) {
+resumeSchema.pre("save", function (next) {
   this.updatedAt = new Date();
   next();
 });
 
-export default mongoose.models.Resume || mongoose.model('Resume', resumeSchema); 
+export default mongoose.models.Resume || mongoose.model("Resume", resumeSchema);
