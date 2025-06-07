@@ -1,5 +1,5 @@
-import connectDB from '@/lib/db/mongodb';
-import ResumeModel from '@/lib/db/models/Resume';
+import connectDB from '@/db/mongodb';
+import ResumeModel from '@/db/models/Resume';
 import type { Resume } from '@/types/Resume';
 import { ApplicationNotFoundError, UnauthorizedError, ValidationError } from './errors';
 

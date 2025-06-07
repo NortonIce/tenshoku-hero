@@ -122,7 +122,7 @@ export default function ResumesClient(props: {
   }
 
   return (
-    <div className="p-6">
+    <div className="flex flex-col h-full w-full p-6">
       {/* <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold">Your Resumes</h2>
         <IconButton onClick={() => setIsModalOpen(true)}>Add Resume</IconButton>
@@ -150,30 +150,33 @@ export default function ResumesClient(props: {
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {resumes.map((resume) => (
-            <div
-              key={resume._id}
-              className="bg-white rounded-lg shadow p-4 hover:shadow-lg transition-shadow"
-            >
-              <h3 className=" mb-2">
-                <b>{resume.title}</b>{" "}
-                <div className="text-sm ">
-                  {new Date(resume.createdAt).toLocaleDateString()}
-                </div>
-              </h3>
-              {resume.link && (
-                <a
-                  href={resume.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-500 hover:text-blue-600 text-sm"
-                >
-                  View in Google Drive
-                </a>
-              )}
-            </div>
-          ))}
+        <div className="flex-1 overflow-y-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {resumes.map((resume) => (
+              <div
+                key={resume._id}
+                className="bg-white rounded-lg shadow p-4 hover:shadow-lg transition-shadow"
+              >
+                <h3 className=" mb-2">
+                  <b>{resume.title}</b>{" "}
+                  <div className="text-sm ">
+                    {new Date(resume.createdAt).toLocaleDateString()}
+                  </div>
+                </h3>
+                {resume.link && (
+                  <a
+                    href={resume.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-500 hover:text-blue-600 text-sm"
+                  >
+                    View in Google Drive
+                  </a>
+                )}
+              </div>
+            ))}
+            <br />
+          </div>
         </div>
       )}
 

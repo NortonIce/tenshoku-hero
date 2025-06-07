@@ -1,5 +1,5 @@
-import connectDB from '@/lib/db/mongodb';
-import Application from '@/lib/db/models/Application';
+import connectDB from '@/db/mongodb';
+import Application from '@/db/models/Application';
 import { Application as ApplicationType } from '@/types/Application';
 import { ApplicationNotFoundError, UnauthorizedError, ValidationError } from './errors';
 

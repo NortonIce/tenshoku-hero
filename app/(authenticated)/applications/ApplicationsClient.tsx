@@ -10,9 +10,7 @@ import { ApplicationListElement } from "@/app/components/listElements/Applicatio
 export default function ApplicationsClient(props: {
   initialApplications: Application[];
 }) {
-  const [applications, setApplications] = useState<Application[]>(
-    props.initialApplications
-  );
+  const [applications, setApplications] = useState<Application[]>([]);
   const [selectedApplication, setSelectedApplication] =
     useState<Application | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
