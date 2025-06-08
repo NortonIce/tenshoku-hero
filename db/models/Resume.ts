@@ -27,8 +27,9 @@ const resumeSchema = new mongoose.Schema({
     default: Date.now,
   },
   applications: {
-    type: Array<String>,
-    default: [],
+    type: Map,
+    of: Number,
+    default: () => new Map(),
   },
 });
 

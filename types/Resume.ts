@@ -8,4 +8,5 @@ export interface Resume {
   userId: string;
   createdAt: string;
   updatedAt: string;
+  applications?: Map<string, number>; // Array of application IDs associated with this resume
 }
