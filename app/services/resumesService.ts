@@ -22,6 +22,9 @@ export async function getResumes(userId: string): Promise<Resume[]> {
     createdAt: resume.createdAt.toISOString(),
     updatedAt: resume.updatedAt.toISOString(),
     userId: resume.userId.toString(),
+    applications: new Map(Object.entries(resume.applications || {})).map(
+      ([key, value]) => [key, value as number]
+    ),
   }));
 }
 
