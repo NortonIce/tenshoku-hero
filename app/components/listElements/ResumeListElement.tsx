@@ -7,13 +7,19 @@ export default function ResumeListElement(props: {
 }) {
   const { resume, onClick, selectedResumeId } = props;
 
-  const usedTimes = (() => {
+  const usedTimes = (countedResume: Resume) => {
     let count = 0;
-    resume?.applications?.forEach((application) => {
-      count += application;
-    });
+
+    let keys = countedResume?.applications?.keys;
+    console.log("Resume applications:", countedResume.applications, keys);
+    if (countedResume?.applications) {
+      for (let key of Object.entries(countedResume?.applications)) {
+        console.log("Key:", key);
+        count += key[1] || 0;
+      }
+    }
     return count;
-  })();
+  };
 
   return (
     <div
@@ -21,7 +27,7 @@ export default function ResumeListElement(props: {
       className="bg-white rounded-lg shadow p-4 hover:shadow-lg transition-shadow"
     >
       <h3 className=" mb-2">
-        <b>{resume.title}</b> <div>Applied {usedTimes} times</div>{" "}
+        <b>{resume.title}</b> <div>Applied {usedTimes(resume)} times</div>{" "}
         <div className="text-sm ">
           {new Date(resume.createdAt).toLocaleDateString()}
         </div>

@@ -6,6 +6,7 @@ import {
   UnauthorizedError,
   ValidationError,
 } from "./errors";
+import { Application } from "@/types/Application";
 
 export async function getResumes(userId: string): Promise<Resume[]> {
   if (!userId) {
@@ -14,6 +15,7 @@ export async function getResumes(userId: string): Promise<Resume[]> {
 
   await connectDB();
   const resumes = await ResumeModel.find({ userId }).sort({ createdAt: -1 });
+  console.log("Fetched resumes:", resumes);
   return resumes.map((resume) => ({
     _id: resume._id.toString(),
     title: resume.title,
@@ -22,9 +24,7 @@ export async function getResumes(userId: string): Promise<Resume[]> {
     createdAt: resume.createdAt.toISOString(),
     updatedAt: resume.updatedAt.toISOString(),
     userId: resume.userId.toString(),
-    applications: new Map(Object.entries(resume.applications || {})).map(
-      ([key, value]) => [key, value as number]
-    ),
+    applications: resume.applications,
   }));
 }
 
