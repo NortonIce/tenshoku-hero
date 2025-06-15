@@ -16,17 +16,6 @@ export default function AddApplicationModal({
   onClose,
   onSubmit,
 }: AddApplicationModalProps) {
-  const [newApplication, setNewApplication] = useState({
-    company: "",
-    position: "",
-    jobSite: "",
-    recruiter: "",
-    status: "Applied" as ApplicationStatus,
-    resume: "",
-    coverLetter: "",
-    applicationDate: new Date().toISOString().split("T")[0],
-  });
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(newApplication);
@@ -45,6 +34,17 @@ export default function AddApplicationModal({
   const [resumeOptions, setResumeOptions] = useState<
     { _id: string; title: string }[]
   >([]);
+
+  const [newApplication, setNewApplication] = useState({
+    company: "",
+    position: "",
+    jobSite: "",
+    recruiter: "",
+    status: "Applied" as ApplicationStatus,
+    resume: resumeOptions.length === 1 ? resumeOptions[0]._id : "",
+    coverLetter: "",
+    applicationDate: new Date().toISOString().split("T")[0],
+  });
 
   useEffect(() => {
     fetchResumes();
@@ -102,6 +102,26 @@ export default function AddApplicationModal({
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700">
+            Resume
+          </label>
+          <Select
+            options={resumeOptions.map((resume) => ({
+              value: resume._id,
+              label: resume.title,
+            }))}
+            onChange={(option) =>
+              setNewApplication({
+                ...newApplication,
+                resume: option ? option.value : "",
+              })
+            }
+            className="mt-1"
+            placeholder="Select a resume"
+            isClearable
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
             Job Site
           </label>
           <input
@@ -114,7 +134,7 @@ export default function AddApplicationModal({
             required
           />
         </div>
-        <div>
+        {/* <div>
           <label className="block text-sm font-medium text-gray-700">
             Recruiter
           </label>
@@ -129,7 +149,7 @@ export default function AddApplicationModal({
             }
             className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
-        </div>
+        </div> */}
         <div>
           <label className="block text-sm font-medium text-gray-700">
             Application Date
@@ -168,26 +188,7 @@ export default function AddApplicationModal({
             <option value="Offer">Offer</option>
           </select>
         </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Resume
-          </label>
-          <Select
-            options={resumeOptions.map((resume) => ({
-              value: resume._id,
-              label: resume.title,
-            }))}
-            onChange={(option) =>
-              setNewApplication({
-                ...newApplication,
-                resume: option ? option.value : "",
-              })
-            }
-            className="mt-1"
-            placeholder="Select a resume"
-            isClearable
-          />
-        </div>
+
         <div>
           <label className="block text-sm font-medium text-gray-700">
             Cover Letter

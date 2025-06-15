@@ -6,6 +6,7 @@ import EditApplicationModal from "@/app/components/EditApplicationModal";
 import { PrimaryButton } from "@/app/components/buttons/PrimaryButton";
 import SecondaryButton from "@/app/components/buttons/SecondaryButton";
 import { ApplicationListElement } from "@/app/components/listElements/ApplicationListElement";
+import { Resume } from "@/types/Resume";
 
 export default function ApplicationsClient(props: {
   initialApplications: Application[];
@@ -17,9 +18,25 @@ export default function ApplicationsClient(props: {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [resumes, setResumes] = useState<Resume[]>([]);
+
+  const fetchResumes = async () => {
+    try {
+      const response = await fetch("/api/resumes");
+      if (!response.ok) {
+        throw new Error("Failed to fetch resumes");
+      }
+      const data = await response.json();
+      console.log("Fetched resumes:", data);
+      setResumes(data);
+    } catch (error) {
+      console.error("Error fetching resumes:", error);
+    }
+  };
 
   useEffect(() => {
     if (applications.length === 0) fetchApplications();
+    if (resumes.length === 0) fetchResumes();
   }, []);
 
   const fetchApplications = async () => {
@@ -139,9 +156,9 @@ export default function ApplicationsClient(props: {
       </div>
 
       {/* Main content */}
-      <div className="flex-1 flex gap-6">
+      <div className="flex-1 overflow-y-auto gap-6 ">
         {/* Applications list */}
-        <div className="w-3/3 overflow-y-auto pr-4">
+        <div className="w-3/3 ">
           <div className="space-y-4">
             {applications.map((application) => (
               <ApplicationListElement
@@ -152,65 +169,6 @@ export default function ApplicationsClient(props: {
             ))}
           </div>
         </div>
-
-        {/* Details panel */}
-        {/* <div className="w-2/3 m-2 bg-white rounded-lg border border-gray-200 p-6 overflow-y-auto shadow-2xl">
-          {selectedApplication ? (
-            <div>
-              <div className="flex justify-between items-start mb-6">
-                <div>
-                  <h2 className="text-2xl font-bold mb-2">
-                    {selectedApplication.company}
-                  </h2>
-                  <p className="text-lg text-gray-700 mb-1">
-                    {selectedApplication.position}
-                  </p>
-                  <p className="text-gray-600">{selectedApplication.jobSite}</p>
-                </div>
-                <div className="flex gap-2">
-                  <SecondaryButton onClick={() => setIsEditModalOpen(true)}>
-                    Edit
-                  </SecondaryButton>
-                  <SecondaryButton variant="red">Delete</SecondaryButton>
-                </div>
-              </div>
-              <div className="space-y-4">
-                <div>
-                  <h3 className="font-semibold mb-1">Status</h3>
-                  <p className="text-gray-600">{selectedApplication.status}</p>
-                </div>
-                <div>
-                  <h3 className="font-semibold mb-1">Recruiter</h3>
-                  <p className="text-gray-600">
-                    {selectedApplication.recruiter}
-                  </p>
-                </div>
-                <div>
-                  <h3 className="font-semibold mb-1">Application Date</h3>
-                  <p className="text-gray-600">
-                    {new Date(
-                      selectedApplication.applicationDate
-                    ).toLocaleDateString()}
-                  </p>
-                </div>
-                <div>
-                  <h3 className="font-semibold mb-1">Resume</h3>
-                  <p className="text-gray-600">{selectedApplication.resume}</p>
-                </div>
-                <div>
-                  <h3 className="font-semibold mb-1">Cover Letter</h3>
-                  <p className="text-gray-600">
-                    {selectedApplication.coverLetter}
-                  </p>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="h-full flex items-center justify-center text-gray-500">
-              Select an application to view details
-            </div>
-          )}
-        </div> */}
       </div>
 
       <AddApplicationModal
