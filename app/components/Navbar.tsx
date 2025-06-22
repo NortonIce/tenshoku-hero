@@ -3,6 +3,7 @@ import {
   ClipboardDocumentListIcon,
   DocumentTextIcon,
   TrophyIcon,
+  ChartPieIcon,
 } from "@heroicons/react/24/outline";
 
 export default function Navbar() {
@@ -11,6 +12,12 @@ export default function Navbar() {
       {/* Desktop/Tablet Navbar */}
       <nav className="h-screen p-2 bg-transparent flex items-center hidden sm:flex">
         <div className="flex flex-col space-y-6">
+          <Link href="/stats" className="flex flex-col items-center group">
+            <div className="w-16 h-16 rounded-xl bg-white/5 backdrop-blur-sm group-hover:bg-white/10 transition border border-gray-200/20 flex items-center justify-center mb-2">
+              <ChartPieIcon className="w-8 h-8 text-gray-700" />
+            </div>
+            <span className="text-sm font-medium text-gray-700">Stats</span>
+          </Link>
           <Link
             href="/applications"
             className="flex flex-col items-center group"
@@ -83,6 +90,17 @@ export default function Navbar() {
             </svg>
           </label>
           {/* Links with auto-close on click using <label> hack */}
+          <label htmlFor="mobile-nav-toggle">
+            <Link
+              href="/stats"
+              className="flex flex-col items-center group cursor-pointer"
+            >
+              <div className="w-16 h-16 rounded-xl bg-white/5 backdrop-blur-sm group-hover:bg-white/10 transition border border-gray-200/20 flex items-center justify-center mb-2">
+                <ChartPieIcon className="w-8 h-8 text-gray-700" />
+              </div>
+              <span className="text-sm font-medium text-gray-700">Stats</span>
+            </Link>
+          </label>
           <label htmlFor="mobile-nav-toggle">
             <Link
               href="/applications"

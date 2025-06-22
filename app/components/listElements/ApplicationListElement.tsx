@@ -1,30 +1,34 @@
-import React from 'react'
-import { Application } from '@/types/Application'
+import React from "react";
+import { Application } from "@/types/Application";
+import StatusBadge from "../StatusBadge";
 
 export const ApplicationListElement = (props: {
-  selectedApplicationId?: string
-  application: Application
-  onClick: (application: Application) => void
+  selectedApplicationId?: string;
+  application: Application;
+  onClick: (application: Application) => void;
   /** if true, always use the compact (mobile) layout */
-  alwaysCompact?: boolean
+  alwaysCompact?: boolean;
 }) => {
-  const { application, onClick, selectedApplicationId, alwaysCompact } = props
-  const isSelected = application.id === selectedApplicationId
+  const { application, onClick, selectedApplicationId, alwaysCompact } = props;
+  const isSelected = application.id === selectedApplicationId;
 
   // shared styles
-  const base       = 'p-4 m-2 rounded-lg border cursor-pointer transition-all bg-white'
-  const hoverShadow= 'hover:shadow-xl shadow-lg'
-  const selectedCl = 'border-blue-500 ring-2 ring-blue-500 shadow-xl'
-  const defaultBd  = 'border-gray-200 hover:border-blue-300'
+  const base =
+    "p-4 m-2 rounded-lg border cursor-pointer transition-all bg-white";
+  const hoverShadow = "hover:shadow-xl shadow-lg";
+  const selectedCl = "border-blue-500 ring-2 ring-blue-500 shadow-xl";
+  const defaultBd = "border-gray-200 hover:border-blue-300";
 
   // responsive wrappers
-  const mobileWr   = `block ${alwaysCompact ? '' : 'md:hidden'}`
-  const desktopWr  = `hidden ${alwaysCompact ? '' : 'md:flex items-center justify-between'}`
-  
+  const mobileWr = `block ${alwaysCompact ? "" : "md:hidden"}`;
+  const desktopWr = `hidden ${
+    alwaysCompact ? "" : "md:flex items-center justify-between"
+  }`;
+
   // a tiny Label component
   const Label = ({ children }: { children: React.ReactNode }) => (
     <div className="text-xs text-gray-400 uppercase mb-1">{children}</div>
-  )
+  );
 
   return (
     <div key={application.id}>
@@ -36,13 +40,18 @@ export const ApplicationListElement = (props: {
           ${isSelected ? selectedCl : defaultBd}
         `}
       >
-        <div className="mb-3">
-          <Label>Company</Label>
-          <div className="font-semibold truncate">{application.company}</div>
+        <div className="mb-3 flex flex-row justify-between">
+          <div className="">
+            <Label>Company</Label>
+            <div className="font-semibold truncate">{application.company}</div>
+          </div>
+          <StatusBadge status={application.status} />
         </div>
         <div className="mb-3">
           <Label>Position</Label>
-          <div className="text-sm text-gray-600 truncate">{application.position}</div>
+          <div className="text-sm text-gray-600 truncate">
+            {application.position}
+          </div>
         </div>
         {/* <div className="mb-3">
           <Label>Job Site</Label>
@@ -70,7 +79,7 @@ export const ApplicationListElement = (props: {
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm text-indigo-600 hover:underline truncate block"
-              onClick={e => e.stopPropagation()}
+              onClick={(e) => e.stopPropagation()}
             >
               Download
             </a>
@@ -95,7 +104,9 @@ export const ApplicationListElement = (props: {
         {/* Position */}
         <div className="flex-1 min-w-0 px-2">
           <Label>Position</Label>
-          <div className="text-sm text-gray-600 truncate">{application.position}</div>
+          <div className="text-sm text-gray-600 truncate">
+            {application.position}
+          </div>
         </div>
 
         {/* Job Site */}
@@ -106,7 +117,7 @@ export const ApplicationListElement = (props: {
             target="_blank"
             rel="noopener noreferrer"
             className="text-sm text-indigo-600 hover:underline truncate block"
-            onClick={e => e.stopPropagation()}
+            onClick={(e) => e.stopPropagation()}
           >
             {application.jobSite}
           </a>
@@ -129,7 +140,7 @@ export const ApplicationListElement = (props: {
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm text-indigo-600 hover:underline truncate block"
-              onClick={e => e.stopPropagation()}
+              onClick={(e) => e.stopPropagation()}
             >
               Download
             </a>
@@ -141,20 +152,9 @@ export const ApplicationListElement = (props: {
         {/* Status pill */}
         <div className="w-30 px-2">
           <Label>Status</Label>
-          <span
-            className={`
-              px-2 py-1 rounded-full text-sm whitespace-nowrap
-              ${application.status === 'Applied'               ? 'bg-blue-100  text-blue-800'   : ''}
-              ${application.status === 'Take home assignment' ? 'bg-yellow-100 text-yellow-800': ''}
-              ${application.status === 'Interview'            ? 'bg-green-100 text-green-800'  : ''}
-              ${application.status === 'Rejected'             ? 'bg-red-100    text-red-800'   : ''}
-              ${application.status === 'Offer'                ? 'bg-purple-100 text-purple-800': ''}
-            `}
-          >
-            {application.status === 'Take home assignment' ? 'Take Home' : application.status}
-          </span>
+          <StatusBadge status={application.status} />
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
