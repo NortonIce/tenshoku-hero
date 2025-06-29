@@ -123,8 +123,9 @@ export default function ResumesClient(props: {
   }
 
   return (
-    <div className="flex-1 flex flex-col w-full p-6 overflow-hidden">
-      <div className="flex justify-start items-center mb-4">
+    <div className="h-screen flex flex-col">
+      {/* Header */}
+      <div className="flex m-2 justify-start items-center">
         <IconButton className="mr-2" onClick={() => setIsModalOpen(true)}>
           Add Resume
         </IconButton>
@@ -137,18 +138,20 @@ export default function ResumesClient(props: {
           <span className="text-red-600">Google Drive not connected</span>
         )}
       </div>
-      {resumes.length === 0 ? (
-        <div className="bg-white rounded-lg shadow p-6 text-center">
-          <h3 className="mt-2 text-sm font-semibold text-gray-900">
-            No resumes yet
-          </h3>
-          <p className="mt-1 text-sm text-gray-500">
-            Get started by creating a new resume.
-          </p>
-        </div>
-      ) : (
-        <div className="flex-1 overflow-y-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+
+      {/* Main content */}
+      <div className="flex-1 overflow-y-auto">
+        {resumes.length === 0 ? (
+          <div className="bg-white rounded-lg shadow p-6 text-center m-2">
+            <h3 className="mt-2 text-sm font-semibold text-gray-900">
+              No resumes yet
+            </h3>
+            <p className="mt-1 text-sm text-gray-500">
+              Get started by creating a new resume.
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-4">
             {resumes.map((resume) => (
               <ResumeListElement
                 key={resume._id}
@@ -160,8 +163,8 @@ export default function ResumesClient(props: {
               /> // Replace with actual selected ID if needed
             ))}
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       <Modal
         isOpen={isModalOpen}
