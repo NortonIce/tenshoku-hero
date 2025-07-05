@@ -164,6 +164,7 @@ export default function ApplicationsClient(props: {
               <ApplicationListElement
                 key={application.id}
                 application={application}
+                resumes={resumes}
                 onClick={setSelectedApplication}
               />
             ))}

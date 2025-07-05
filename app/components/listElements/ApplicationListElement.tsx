@@ -1,15 +1,18 @@
 import React from "react";
 import { Application } from "@/types/Application";
+import { Resume } from "@/types/Resume";
 import StatusBadge from "../StatusBadge";
 
 export const ApplicationListElement = (props: {
   selectedApplicationId?: string;
   application: Application;
   onClick: (application: Application) => void;
+  /** list of resumes to look up links from */
+  resumes: Resume[];
   /** if true, always use the compact (mobile) layout */
   alwaysCompact?: boolean;
 }) => {
-  const { application, onClick, selectedApplicationId, alwaysCompact } = props;
+  const { application, onClick, selectedApplicationId, alwaysCompact, resumes } = props;
   const isSelected = application.id === selectedApplicationId;
 
   // shared styles
@@ -26,9 +29,12 @@ export const ApplicationListElement = (props: {
   }`;
 
   // a tiny Label component
-  const Label = ({ children }: { children: React.ReactNode }) => (
+  const Label = ({ children }: React.PropsWithChildren<{}>) => (
     <div className="text-xs text-gray-400 uppercase mb-1">{children}</div>
   );
+
+  // resolve resume link from provided resumes list
+  const resumeLink = resumes.find((r) => (r._id ?? "") === application.resume)?.link;
 
   return (
     <div key={application.id}>
@@ -71,11 +77,11 @@ export const ApplicationListElement = (props: {
             {new Date(application.applicationDate).toLocaleDateString()}
           </div>
         </div>
-        {application.resume && (
+        {resumeLink && (
           <div className="mb-3">
             <Label>Resume</Label>
             <a
-              href={application.resume}
+              href={resumeLink}
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm text-indigo-600 hover:underline truncate block"
@@ -134,9 +140,9 @@ export const ApplicationListElement = (props: {
         {/* Resume */}
         <div className="w-32 px-2">
           <Label>Resume</Label>
-          {application.resume ? (
+          {resumeLink ? (
             <a
-              href={application.resume}
+              href={resumeLink}
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm text-indigo-600 hover:underline truncate block"
