@@ -6,7 +6,6 @@ import {
   UnauthorizedError,
   ValidationError,
 } from "./errors";
-import { Application } from "@/types/Application";
 
 export async function getResumes(userId: string): Promise<Resume[]> {
   if (!userId) {

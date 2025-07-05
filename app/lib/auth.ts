@@ -1,4 +1,5 @@
 import { AuthOptions } from "next-auth";
+import { JWT } from "next-auth/jwt";
 import GoogleProvider from "next-auth/providers/google";
 import connectDB from "@/db/mongodb";
 import User from "@/db/models/User";
@@ -24,7 +25,7 @@ export const authOptions: AuthOptions = {
 
           if (!existingUser) {
             // Create new user if doesn't exist
-            const newUser = await User.create({
+            await User.create({
               email: user.email,
               name: user.name,
               image: user.image,
@@ -40,7 +41,7 @@ export const authOptions: AuthOptions = {
       }
       return true;
     },
-    async jwt({ token, user, account }) {
+    async jwt({ token }: { token: JWT }) {
       try {
         await connectDB();
         const dbUser = await User.findOne({ email: token.email });

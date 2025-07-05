@@ -29,7 +29,7 @@ export const ApplicationListElement = (props: {
   }`;
 
   // a tiny Label component
-  const Label = ({ children }: React.PropsWithChildren<{}>) => (
+  const Label: React.FC<{ children: React.ReactNode }> = ({ children }) => (
     <div className="text-xs text-gray-400 uppercase mb-1">{children}</div>
   );
 
@@ -66,7 +66,7 @@ export const ApplicationListElement = (props: {
             target="_blank"
             rel="noopener noreferrer"
             className="text-sm text-indigo-600 hover:underline truncate block"
-            onClick={e => e.stopPropagation()}
+            onClick={(e: React.MouseEvent<HTMLAnchorElement>) => e.stopPropagation()}
           >
             {application.jobSite}
           </a>
@@ -85,7 +85,7 @@ export const ApplicationListElement = (props: {
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm text-indigo-600 hover:underline truncate block"
-              onClick={(e) => e.stopPropagation()}
+              onClick={(e: React.MouseEvent<HTMLAnchorElement>) => e.stopPropagation()}
             >
               Open in Google Drive
             </a>
@@ -123,7 +123,7 @@ export const ApplicationListElement = (props: {
             target="_blank"
             rel="noopener noreferrer"
             className="text-sm text-indigo-600 hover:underline truncate block"
-            onClick={(e) => e.stopPropagation()}
+            onClick={(e: React.MouseEvent<HTMLAnchorElement>) => e.stopPropagation()}
           >
             {application.jobSite}
           </a>
@@ -146,7 +146,7 @@ export const ApplicationListElement = (props: {
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm text-indigo-600 hover:underline truncate block"
-              onClick={(e) => e.stopPropagation()}
+              onClick={(e: React.MouseEvent<HTMLAnchorElement>) => e.stopPropagation()}
             >
               Open in Google Drive
             </a>

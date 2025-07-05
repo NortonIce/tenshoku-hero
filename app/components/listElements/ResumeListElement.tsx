@@ -32,8 +32,8 @@ export default function ResumeListElement(props: {
   const usedTimes = (countedResume: Resume) => {
     let count = 0;
     if (countedResume?.applications) {
-      for (let key of Object.entries(countedResume?.applications)) {
-        count += key[1] || 0;
+      for (const [, value] of Object.entries(countedResume.applications)) {
+        count += (value as number) || 0;
       }
     }
     return count;
@@ -72,7 +72,7 @@ export default function ResumeListElement(props: {
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm text-indigo-600 hover:underline truncate block"
-              onClick={(e) => e.stopPropagation()}
+              onClick={(e: React.MouseEvent<HTMLAnchorElement>) => e.stopPropagation()}
             >
               View in Google Drive
             </a>
@@ -119,7 +119,7 @@ export default function ResumeListElement(props: {
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm text-indigo-600 hover:underline truncate block"
-              onClick={(e) => e.stopPropagation()}
+              onClick={(e: React.MouseEvent<HTMLAnchorElement>) => e.stopPropagation()}
             >
               View in Google Drive
             </a>

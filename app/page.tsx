@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import Navbar from './components/Navbar';
 
 export default function Home() {
-  const [showStartButton, setShowStartButton] = useState(true);
+  const [showStartButton] = useState(true);
   const router = useRouter();
 
   function start() {

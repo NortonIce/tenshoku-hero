@@ -187,10 +187,10 @@ export default function EditApplicationModal({
               label: resume.title,
             }))}
             value={(() => {
-              let v = resumeOptions.find(
+              const match = resumeOptions.find(
                 (resume) => resume._id === editedApplication.resume
               );
-              return v ? { value: v._id, label: v.title } : null;
+              return match ? { value: match._id, label: match.title } : null;
             })()}
             onChange={(option) =>
               setEditedApplication({

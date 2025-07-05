@@ -4,18 +4,14 @@ import { Application } from "@/types/Application";
 import AddApplicationModal from "@/app/components/AddApplicationModal";
 import EditApplicationModal from "@/app/components/EditApplicationModal";
 import { PrimaryButton } from "@/app/components/buttons/PrimaryButton";
-import SecondaryButton from "@/app/components/buttons/SecondaryButton";
 import { ApplicationListElement } from "@/app/components/listElements/ApplicationListElement";
 import { Resume } from "@/types/Resume";
 
-export default function ApplicationsClient(props: {
-  initialApplications: Application[];
-}) {
+export default function ApplicationsClient() {
   const [applications, setApplications] = useState<Application[]>([]);
   const [selectedApplication, setSelectedApplication] =
     useState<Application | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [resumes, setResumes] = useState<Resume[]>([]);
@@ -35,8 +31,10 @@ export default function ApplicationsClient(props: {
   };
 
   useEffect(() => {
-    if (applications.length === 0) fetchApplications();
-    if (resumes.length === 0) fetchResumes();
+    // Run once on mount
+    fetchApplications();
+    fetchResumes();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchApplications = async () => {
@@ -111,7 +109,6 @@ export default function ApplicationsClient(props: {
         )
       );
       setSelectedApplication(updatedApplication);
-      setIsEditModalOpen(false);
     } catch (err) {
       console.error("Error updating application:", err);
       // You might want to show an error message to the user here
@@ -182,7 +179,6 @@ export default function ApplicationsClient(props: {
         isOpen={selectedApplication !== null}
         onClose={() => {
           setSelectedApplication(null);
-          setIsEditModalOpen(false);
         }}
         onSubmit={handleEditApplication}
         application={selectedApplication}

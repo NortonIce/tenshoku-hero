@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getApplications, addApplication, updateApplication, deleteApplication } from '@/app/services/applicationsService';
 import { getServerSession } from 'next-auth';
-import { ApplicationError, ApplicationNotFoundError, UnauthorizedError, ValidationError } from '@/app/services/errors';
+import { ApplicationNotFoundError, UnauthorizedError, ValidationError } from '@/app/services/errors';
 import { authOptions } from '@/app/lib/auth';
 
 export async function GET() {
