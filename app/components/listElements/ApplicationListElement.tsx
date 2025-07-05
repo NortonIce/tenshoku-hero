@@ -81,7 +81,7 @@ export const ApplicationListElement = (props: {
               className="text-sm text-indigo-600 hover:underline truncate block"
               onClick={(e) => e.stopPropagation()}
             >
-              Download
+              Open in Google Drive
             </a>
           </div>
         )}
@@ -142,7 +142,7 @@ export const ApplicationListElement = (props: {
               className="text-sm text-indigo-600 hover:underline truncate block"
               onClick={(e) => e.stopPropagation()}
             >
-              Download
+              Open in Google Drive
             </a>
           ) : (
             <div className="text-sm text-gray-500">—</div>
