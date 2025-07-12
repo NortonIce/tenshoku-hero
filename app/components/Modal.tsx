@@ -60,8 +60,8 @@ export default function Modal({
         </Transition.Child>
 
         {/* Modal container */}
-        <div className="fixed inset-0 z-10 overflow-y-auto">
-          <div className="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+        <div className="fixed inset-0 z-10 flex items-end justify-center p-0 sm:items-center sm:p-4">
+          <div className="flex min-h-full w-full items-end justify-center sm:items-center">
             <Transition.Child
               as={Fragment}
               enter="ease-out duration-300"
@@ -72,10 +72,10 @@ export default function Modal({
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
               <Dialog.Panel
-                className={`relative w-full transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 ${sizeClasses[size]} sm:p-6`}
+                className={`relative w-full max-h-[100vh] sm:max-h-[90vh] transform overflow-hidden rounded-t-lg sm:rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 ${sizeClasses[size]} flex flex-col`}
               >
                 {/* Header */}
-                <div className="flex items-start justify-between">
+                <div className="flex items-start justify-between px-4 pt-5 pb-4 sm:px-6 border-b border-gray-200 flex-shrink-0">
                   <Dialog.Title
                     as="h3"
                     className="text-lg font-semibold leading-6 text-gray-900"
@@ -95,8 +95,8 @@ export default function Modal({
                 </div>
 
                 {/* Content */}
-                <div className="mt-4">
-                  <div className="overflow-y-auto max-h-[calc(100vh-200px)]">
+                <div className="flex-1 overflow-y-auto px-4 pb-4 sm:px-6 sm:pb-6">
+                  <div className="pt-4">
                     {children}
                   </div>
                 </div>
