@@ -31,6 +31,11 @@ const resumeSchema = new mongoose.Schema({
     of: Number,
     default: () => new Map(),
   },
+  isPrefferd: {
+    type: Boolean,
+    default: false,
+    required: false,
+  },
 });
 
 // Update the updatedAt timestamp before saving

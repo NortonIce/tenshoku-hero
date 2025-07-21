@@ -9,6 +9,6 @@ export default async function Applications() {
   //   return <ApplicationsClient initialApplications={[]} />;
   // }
   // const applications = await getApplications(session?.user?.id);
-
+  // return <div>Apps</div>;
   return <ApplicationsClient initialApplications={[]} />;
 }

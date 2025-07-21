@@ -1,4 +1,35 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
+
+const applicationStepSchema = new mongoose.Schema(
+  {
+    type: {
+      type: String,
+      required: true,
+      enum: [
+        "Applied",
+        "Phone Screen",
+        "Take Home Assignment",
+        "Interview Round 1",
+        "Final Interview",
+        "Reference Check",
+        "Offer",
+        "Rejected",
+        "Withdrawn",
+      ],
+    },
+    date: {
+      type: Date,
+      required: true,
+    },
+    notes: {
+      type: String,
+      required: false,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
 
 const applicationSchema = new mongoose.Schema({
   company: {
@@ -13,15 +44,7 @@ const applicationSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  status: {
-    type: String,
-    required: true,
-    enum: ['Applied', 'Take home assignment', 'Interview', 'Rejected', 'Offer'],
-  },
-  applicationDate: {
-    type: Date,
-    required: true,
-  },
+  steps: [applicationStepSchema],
   resume: {
     type: String,
     required: false,
@@ -36,7 +59,7 @@ const applicationSchema = new mongoose.Schema({
   },
   userId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    ref: "User",
     required: true,
   },
   createdAt: {
@@ -50,9 +73,10 @@ const applicationSchema = new mongoose.Schema({
 });
 
 // Update the updatedAt timestamp before saving
-applicationSchema.pre('save', function(next) {
+applicationSchema.pre("save", function (next) {
   this.updatedAt = new Date();
   next();
 });
 
-export default mongoose.models.Application || mongoose.model('Application', applicationSchema); 
+export default mongoose.models.Application ||
+  mongoose.model("Application", applicationSchema);

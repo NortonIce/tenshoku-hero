@@ -16,7 +16,7 @@ export default function ResumesClient(props: {
   const [title, setTitle] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     fetchResumes();
@@ -24,6 +24,7 @@ export default function ResumesClient(props: {
 
   const fetchResumes = async () => {
     try {
+      setIsLoading(true);
       const response = await fetch("/api/resumes");
       if (!response.ok) throw new Error("Failed to fetch resumes");
       const data = await response.json();
@@ -114,14 +115,6 @@ export default function ResumesClient(props: {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
-    );
-  }
-
   return (
     <div className="h-screen flex flex-col">
       {/* Header */}
@@ -141,7 +134,11 @@ export default function ResumesClient(props: {
 
       {/* Main content */}
       <div className="flex-1 overflow-y-auto">
-        {resumes.length === 0 ? (
+        {isLoading && resumes.length === 0 ? (
+          <div className="flex items-center justify-center h-48">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          </div>
+        ) : resumes.length === 0 ? (
           <div className="bg-white rounded-lg shadow p-6 text-center m-2">
             <h3 className="mt-2 text-sm font-semibold text-gray-900">
               No resumes yet

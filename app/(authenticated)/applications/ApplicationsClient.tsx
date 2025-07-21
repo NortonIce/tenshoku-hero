@@ -1,43 +1,27 @@
 "use client";
 import { useState, useEffect } from "react";
 import { Application } from "@/types/Application";
-import AddApplicationModal from "@/app/components/AddApplicationModal";
-import EditApplicationModal from "@/app/components/EditApplicationModal";
+import ApplicationModal from "@/app/components/ApplicationModal";
 import { PrimaryButton } from "@/app/components/buttons/PrimaryButton";
-import SecondaryButton from "@/app/components/buttons/SecondaryButton";
 import { ApplicationListElement } from "@/app/components/listElements/ApplicationListElement";
-import { Resume } from "@/types/Resume";
 
-export default function ApplicationsClient(props: {
+export default function ApplicationsClient({
+  initialApplications
+}: {
   initialApplications: Application[];
 }) {
   const [applications, setApplications] = useState<Application[]>([]);
   const [selectedApplication, setSelectedApplication] =
     useState<Application | null>(null);
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState<"add" | "edit">("add");
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [resumes, setResumes] = useState<Resume[]>([]);
-
-  const fetchResumes = async () => {
-    try {
-      const response = await fetch("/api/resumes");
-      if (!response.ok) {
-        throw new Error("Failed to fetch resumes");
-      }
-      const data = await response.json();
-      console.log("Fetched resumes:", data);
-      setResumes(data);
-    } catch (error) {
-      console.error("Error fetching resumes:", error);
-    }
-  };
 
   useEffect(() => {
-    if (applications.length === 0) fetchApplications();
-    if (resumes.length === 0) fetchResumes();
-  }, []);
+    setApplications(initialApplications);
+    fetchApplications();
+  }, [initialApplications]);
 
   const fetchApplications = async () => {
     try {
@@ -82,7 +66,7 @@ export default function ApplicationsClient(props: {
 
       const addedApplication = await response.json();
       setApplications((prev) => [...prev, addedApplication]);
-      setIsAddModalOpen(false);
+      setIsModalOpen(false);
     } catch (err) {
       console.error("Error adding application:", err);
       // You might want to show an error message to the user here
@@ -110,35 +94,35 @@ export default function ApplicationsClient(props: {
           app.id === updatedApplication.id ? updatedApplication : app
         )
       );
-      setSelectedApplication(updatedApplication);
-      setIsEditModalOpen(false);
+      setSelectedApplication(null);
+      setIsModalOpen(false);
     } catch (err) {
       console.error("Error updating application:", err);
       // You might want to show an error message to the user here
     }
   };
 
-  if (isLoading && applications.length === 0) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="text-red-500">{error}</div>
-      </div>
-    );
-  }
+  const handleModalSubmit = (
+    data: Omit<Application, "id" | "createdAt"> | Application
+  ) => {
+    if (modalMode === "add") {
+      handleAddApplication(data as Omit<Application, "id" | "createdAt">);
+    } else {
+      handleEditApplication(data as Application);
+    }
+  };
 
   return (
     <div className="h-screen flex flex-col">
       {/* Header */}
       <div className="flex m-2 justify-between items-center">
-        <PrimaryButton onClick={() => setIsAddModalOpen(true)}>
+        <PrimaryButton
+          onClick={() => {
+            setModalMode("add");
+            setSelectedApplication(null);
+            setIsModalOpen(true);
+          }}
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="h-5 w-5"
@@ -157,34 +141,44 @@ export default function ApplicationsClient(props: {
 
       {/* Main content */}
       <div className="flex-1 overflow-y-auto gap-6 ">
-        {/* Applications list */}
-        <div className="w-3/3 ">
-          <div className="space-y-4">
-            {applications.map((application) => (
-              <ApplicationListElement
-                key={application.id}
-                application={application}
-                onClick={setSelectedApplication}
-              />
-            ))}
+        {error ? (
+          <div className="flex items-center justify-center h-full">
+            <div className="text-red-500">{error}</div>
           </div>
-        </div>
+        ) : (
+          <div className="w-3/3 ">
+            {isLoading && applications.length === 0 ? (
+              <div className="flex items-center justify-center h-48">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {applications.map((application) => (
+                  <ApplicationListElement
+                    key={application.id}
+                    application={application}
+                    onClick={(application) => {
+                      setModalMode("edit");
+                      setSelectedApplication(application);
+                      setIsModalOpen(true);
+                    }}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
-      <AddApplicationModal
-        isOpen={isAddModalOpen}
-        onClose={() => setIsAddModalOpen(false)}
-        onSubmit={handleAddApplication}
-      />
-
-      <EditApplicationModal
-        isOpen={selectedApplication !== null}
+      <ApplicationModal
+        isOpen={isModalOpen}
         onClose={() => {
+          setIsModalOpen(false);
           setSelectedApplication(null);
-          setIsEditModalOpen(false);
         }}
-        onSubmit={handleEditApplication}
+        onSubmit={handleModalSubmit}
         application={selectedApplication}
+        mode={modalMode}
       />
     </div>
   );

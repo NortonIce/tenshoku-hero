@@ -61,7 +61,7 @@ export default function Modal({
 
         {/* Modal container */}
         <div className="fixed inset-0 z-10 flex items-end justify-center p-0 sm:items-center sm:p-4">
-          <div className="flex min-h-full w-full items-end justify-center sm:items-center">
+          <div className="flex min-h-full w-full items-end justify-center sm:items-center overflow-x-hidden">
             <Transition.Child
               as={Fragment}
               enter="ease-out duration-300"
@@ -95,8 +95,8 @@ export default function Modal({
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 overflow-y-auto px-4 pb-4 sm:px-6 sm:pb-6">
-                  <div className="pt-4">
+                <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 pb-4 sm:px-6 sm:pb-6">
+                  <div className="pt-4 min-w-0">
                     {children}
                   </div>
                 </div>

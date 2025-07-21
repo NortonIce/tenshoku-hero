@@ -1,6 +1,6 @@
 import connectDB from "@/db/mongodb";
 import Application from "@/db/models/Application";
-import { Application as ApplicationType } from "@/types/Application";
+import { Application as ApplicationType, ApplicationStep, ApplicationStepType } from "@/types/Application";
 import {
   ApplicationNotFoundError,
   UnauthorizedError,
@@ -24,8 +24,12 @@ export async function getApplications(
     company: app.company,
     position: app.position,
     jobSite: app.jobSite,
-    status: app.status,
-    applicationDate: app.applicationDate.toISOString(),
+    steps: app.steps.map((step: any) => ({
+      id: step._id.toString(),
+      type: step.type,
+      date: step.date.toISOString(),
+      notes: step.notes,
+    })),
     createdAt: app.createdAt.toISOString(),
     resume: app.resume,
     coverLetter: app.coverLetter,
@@ -46,39 +50,40 @@ export async function addApplication(
     !application.company ||
     !application.position ||
     !application.jobSite ||
-    !application.status ||
-    !application.applicationDate
+    !application.steps ||
+    !Array.isArray(application.steps) ||
+    application.steps.length === 0
   ) {
     throw new ValidationError(
-      "Missing required fields: company, position, jobSite, status, and applicationDate are required"
+      "Missing required fields: company, position, jobSite, and at least one step are required"
     );
   }
 
-  // Validate status
-  const validStatuses = [
-    "Applied",
-    "Take home assignment",
-    "Interview",
-    "Rejected",
-    "Offer",
-  ];
-  if (!validStatuses.includes(application.status)) {
-    throw new ValidationError(
-      `Invalid status. Must be one of: ${validStatuses.join(", ")}`
-    );
+  // Validate steps
+  for (const step of application.steps) {
+    if (!step.type || !step.date) {
+      throw new ValidationError(
+        "Each step must have type and date"
+      );
+    }
   }
 
   await connectDB();
   const newApplication = await Application.create({
     ...application,
     userId,
-    applicationDate: new Date(application.applicationDate),
+    steps: application.steps.map(step => ({
+      ...step,
+      date: new Date(step.date),
+    })),
   });
 
+  // Get the current status from the latest step for stats
+  const latestStep = application.steps[application.steps.length - 1];
   await updateApplicationsStats(
     userId,
     application.resume,
-    application.status,
+    latestStep.type,
     undefined
   );
 
@@ -87,8 +92,12 @@ export async function addApplication(
     company: newApplication.company,
     position: newApplication.position,
     jobSite: newApplication.jobSite,
-    status: newApplication.status,
-    applicationDate: newApplication.applicationDate.toISOString(),
+    steps: newApplication.steps.map((step: any) => ({
+      id: step._id.toString(),
+      type: step.type,
+      date: step.date.toISOString(),
+      notes: step.notes,
+    })),
     createdAt: newApplication.createdAt.toISOString(),
     resume: newApplication.resume,
     coverLetter: newApplication.coverLetter,
@@ -109,30 +118,31 @@ export async function updateApplication(
     throw new ValidationError("Application ID is required");
   }
 
-  // Validate status if provided
-  if (application.status) {
-    const validStatuses = [
-      "Applied",
-      "Take home assignment",
-      "Interview",
-      "Rejected",
-      "Offer",
-    ];
-    if (!validStatuses.includes(application.status)) {
-      throw new ValidationError(
-        `Invalid status. Must be one of: ${validStatuses.join(", ")}`
-      );
+  // Validate steps if provided
+  if (application.steps) {
+    for (const step of application.steps) {
+      if (!step.type || !step.date) {
+        throw new ValidationError(
+          "Each step must have type and date"
+        );
+      }
     }
   }
 
   await connectDB();
+  const updateData: any = { ...application };
+  
+  if (application.steps) {
+    updateData.steps = application.steps.map(step => ({
+      ...step,
+      date: new Date(step.date),
+    }));
+  }
+
   const updatedApplication = await Application.findOneAndUpdate(
     { _id: id, userId },
     {
-      ...application,
-      ...(application.applicationDate && {
-        applicationDate: new Date(application.applicationDate),
-      }),
+      ...updateData,
       updatedAt: new Date(),
     },
     { new: true }
@@ -147,8 +157,12 @@ export async function updateApplication(
     company: updatedApplication.company,
     position: updatedApplication.position,
     jobSite: updatedApplication.jobSite,
-    status: updatedApplication.status,
-    applicationDate: updatedApplication.applicationDate.toISOString(),
+    steps: updatedApplication.steps.map((step: any) => ({
+      id: step._id.toString(),
+      type: step.type,
+      date: step.date.toISOString(),
+      notes: step.notes,
+    })),
     createdAt: updatedApplication.createdAt.toISOString(),
     resume: updatedApplication.resume,
     coverLetter: updatedApplication.coverLetter,

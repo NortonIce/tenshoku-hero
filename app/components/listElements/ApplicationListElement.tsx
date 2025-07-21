@@ -2,6 +2,34 @@ import React from "react";
 import { Application } from "@/types/Application";
 import StatusBadge from "../StatusBadge";
 
+// Helper function to get the latest step
+const getLatestStep = (application: Application) => {
+  if (!application.steps || application.steps.length === 0) return null;
+  // Sort by date and return the most recent one
+  return application.steps.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+};
+
+// Helper function to get overall application status
+const getOverallStatus = (application: Application) => {
+  const latestStep = getLatestStep(application);
+  if (!latestStep) return "Applied";
+  
+  // Map step types to simplified status for display
+  if (latestStep.type === "Rejected" || latestStep.type === "Withdrawn") {
+    return "Rejected";
+  }
+  if (latestStep.type === "Offer") {
+    return "Offer";
+  }
+  if (latestStep.type.includes("Interview")) {
+    return "Interview";
+  }
+  if (latestStep.type === "Take Home Assignment") {
+    return "Take home assignment";
+  }
+  return "Applied";
+};
+
 export const ApplicationListElement = (props: {
   selectedApplicationId?: string;
   application: Application;
@@ -11,6 +39,8 @@ export const ApplicationListElement = (props: {
 }) => {
   const { application, onClick, selectedApplicationId, alwaysCompact } = props;
   const isSelected = application.id === selectedApplicationId;
+  const latestStep = getLatestStep(application);
+  const overallStatus = getOverallStatus(application);
 
   // shared styles
   const base =
@@ -45,7 +75,7 @@ export const ApplicationListElement = (props: {
             <Label>Company</Label>
             <div className="font-semibold truncate">{application.company}</div>
           </div>
-          <StatusBadge status={application.status} />
+          <StatusBadge status={overallStatus} />
         </div>
         <div className="mb-3">
           <Label>Position</Label>
@@ -66,9 +96,15 @@ export const ApplicationListElement = (props: {
           </a>
         </div> */}
         <div className="mb-3">
-          <Label>Applied On</Label>
+          <Label>Latest Step</Label>
           <div className="text-sm text-gray-500">
-            {new Date(application.applicationDate).toLocaleDateString()}
+            {latestStep ? `${latestStep.type} (${new Date(latestStep.date).toLocaleDateString()})` : 'No steps'}
+          </div>
+        </div>
+        <div className="mb-3">
+          <Label>Steps Progress</Label>
+          <div className="text-sm text-gray-500">
+            {application.steps?.length || 0} step{application.steps?.length !== 1 ? 's' : ''}
           </div>
         </div>
         {application.resume && (
@@ -123,11 +159,11 @@ export const ApplicationListElement = (props: {
           </a>
         </div>
 
-        {/* Applied On */}
-        <div className="w-40 px-2">
-          <Label>Applied On</Label>
+        {/* Latest Step */}
+        <div className="w-48 px-2">
+          <Label>Latest Step</Label>
           <div className="text-sm text-gray-500">
-            {new Date(application.applicationDate).toLocaleDateString()}
+            {latestStep ? `${latestStep.type} (${new Date(latestStep.date).toLocaleDateString()})` : 'No steps'}
           </div>
         </div>
 
@@ -152,7 +188,7 @@ export const ApplicationListElement = (props: {
         {/* Status pill */}
         <div className="w-30 px-2">
           <Label>Status</Label>
-          <StatusBadge status={application.status} />
+          <StatusBadge status={overallStatus} />
         </div>
       </div>
     </div>
