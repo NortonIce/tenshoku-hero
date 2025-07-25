@@ -6,14 +6,16 @@ import StatusBadge from "../StatusBadge";
 const getLatestStep = (application: Application) => {
   if (!application.steps || application.steps.length === 0) return null;
   // Sort by date and return the most recent one
-  return application.steps.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+  return application.steps
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .findLast((x) => true);
 };
 
 // Helper function to get overall application status
 const getOverallStatus = (application: Application) => {
   const latestStep = getLatestStep(application);
   if (!latestStep) return "Applied";
-  
+
   // Map step types to simplified status for display
   if (latestStep.type === "Rejected" || latestStep.type === "Withdrawn") {
     return "Rejected";
@@ -98,13 +100,18 @@ export const ApplicationListElement = (props: {
         <div className="mb-3">
           <Label>Latest Step</Label>
           <div className="text-sm text-gray-500">
-            {latestStep ? `${latestStep.type} (${new Date(latestStep.date).toLocaleDateString()})` : 'No steps'}
+            {latestStep
+              ? `${latestStep.type} (${new Date(
+                  latestStep.date
+                ).toLocaleDateString()})`
+              : "No steps"}
           </div>
         </div>
         <div className="mb-3">
           <Label>Steps Progress</Label>
           <div className="text-sm text-gray-500">
-            {application.steps?.length || 0} step{application.steps?.length !== 1 ? 's' : ''}
+            {application.steps?.length || 0} step
+            {application.steps?.length !== 1 ? "s" : ""}
           </div>
         </div>
         {application.resume && (
@@ -160,10 +167,14 @@ export const ApplicationListElement = (props: {
         </div>
 
         {/* Latest Step */}
-        <div className="w-48 px-2">
+        <div className="flex-1 px-2">
           <Label>Latest Step</Label>
           <div className="text-sm text-gray-500">
-            {latestStep ? `${latestStep.type} (${new Date(latestStep.date).toLocaleDateString()})` : 'No steps'}
+            {latestStep
+              ? `${latestStep.type} (${new Date(
+                  latestStep.date
+                ).toLocaleDateString()})`
+              : "No steps"}
           </div>
         </div>
 

@@ -6,6 +6,7 @@ import {
 import { useEffect, useState } from "react";
 import Modal from "./Modal";
 import Select from "react-select";
+import CreatableSelect from "react-select/creatable";
 import { PlusIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 interface ApplicationModalProps {
@@ -22,14 +23,38 @@ const stepTypes: ApplicationStepType[] = [
   "Applied",
   "Phone Screen",
   "Take Home Assignment",
-  "Interview Round 1",
-  "Interview Round 2",
-  "Interview Round 3",
+  "Interview",
   "Final Interview",
   "Reference Check",
   "Offer",
   "Rejected",
   "Withdrawn",
+];
+
+// Hardcoded position suggestions
+const positionSuggestions = [
+  "Software Engineer",
+  "Frontend Developer",
+  "Backend Developer",
+  "Full Stack Developer",
+  "Product Manager",
+  "Data Scientist",
+  "UX Designer",
+  "QA Engineer",
+  "DevOps Engineer",
+];
+
+// Hardcoded job site suggestions
+const jobSiteSuggestions = [
+  "LinkedIn",
+  "Indeed",
+  "Glassdoor",
+  "AngelList",
+  "Company Website",
+  "Stack Overflow",
+  "Hired",
+  "ZipRecruiter",
+  "Monster",
 ];
 
 
@@ -215,14 +240,19 @@ export default function ApplicationModal({
           <label className="block text-sm font-medium text-gray-700">
             Position
           </label>
-          <input
-            type="text"
-            value={formData.position}
-            onChange={(e) =>
-              setFormData({ ...formData, position: e.target.value })
+          <CreatableSelect
+            isClearable
+            options={positionSuggestions.map((pos) => ({ value: pos, label: pos }))}
+            value={formData.position ? { value: formData.position, label: formData.position } : null}
+            onChange={(option) =>
+              setFormData({ ...formData, position: option ? option.value : "" })
             }
-            className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            required
+            className="mt-1"
+            placeholder="Enter or select a position"
+            styles={{
+              menu: (base) => ({ ...base, maxWidth: "100%", zIndex: 9999 }),
+              control: (base) => ({ ...base, minWidth: 0 }),
+            }}
           />
         </div>
 
@@ -261,14 +291,19 @@ export default function ApplicationModal({
           <label className="block text-sm font-medium text-gray-700">
             Job Site
           </label>
-          <input
-            type="text"
-            value={formData.jobSite}
-            onChange={(e) =>
-              setFormData({ ...formData, jobSite: e.target.value })
+          <CreatableSelect
+            isClearable
+            options={jobSiteSuggestions.map((site) => ({ value: site, label: site }))}
+            value={formData.jobSite ? { value: formData.jobSite, label: formData.jobSite } : null}
+            onChange={(option) =>
+              setFormData({ ...formData, jobSite: option ? option.value : "" })
             }
-            className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            required
+            className="mt-1"
+            placeholder="Enter or select a job site"
+            styles={{
+              menu: (base) => ({ ...base, maxWidth: "100%", zIndex: 9999 }),
+              control: (base) => ({ ...base, minWidth: 0 }),
+            }}
           />
         </div>
 

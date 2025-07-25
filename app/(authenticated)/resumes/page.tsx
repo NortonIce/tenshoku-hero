@@ -6,6 +6,7 @@ export default async function ResumesPage() {
   const refreshToken = cookieStore.get("googleDriveRefreshToken");
 
   const hasToken = !!refreshToken?.value;
+  // return <div>Resumes</div>;
   return (
     <ResumesClient
       clientId={process.env.GOOGLE_CLIENT_ID || ""}
