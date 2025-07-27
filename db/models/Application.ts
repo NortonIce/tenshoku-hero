@@ -53,6 +53,10 @@ const applicationSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
+  link: {
+    type: String,
+    required: false,
+  },
   recruiter: {
     type: String,
     required: false,

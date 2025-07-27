@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   LineChart,
   Line,
@@ -19,43 +19,38 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 
-// Sample data for charts
-const applicationData = [
-  { month: 'Jan', applications: 12, interviews: 3, offers: 1 },
-  { month: 'Feb', applications: 18, interviews: 5, offers: 2 },
-  { month: 'Mar', applications: 15, interviews: 4, offers: 1 },
-  { month: 'Apr', applications: 22, interviews: 7, offers: 3 },
-  { month: 'May', applications: 19, interviews: 6, offers: 2 },
-  { month: 'Jun', applications: 25, interviews: 8, offers: 4 },
-];
-
-const statusData = [
-  { name: 'Applied', value: 45, color: '#3B82F6' },
-  { name: 'Interview', value: 18, color: '#F59E0B' },
-  { name: 'Offer', value: 8, color: '#10B981' },
-  { name: 'Rejected', value: 12, color: '#EF4444' },
-  { name: 'Withdrawn', value: 5, color: '#6B7280' },
-];
-
-const weeklyActivity = [
-  { day: 'Mon', applications: 3, interviews: 1 },
-  { day: 'Tue', applications: 5, interviews: 2 },
-  { day: 'Wed', applications: 2, interviews: 0 },
-  { day: 'Thu', applications: 4, interviews: 1 },
-  { day: 'Fri', applications: 6, interviews: 3 },
-  { day: 'Sat', applications: 1, interviews: 0 },
-  { day: 'Sun', applications: 0, interviews: 0 },
-];
-
-const companyStats = [
-  { company: 'Tech Corp', applications: 8, interviews: 3, offers: 1 },
-  { company: 'Startup Inc', applications: 12, interviews: 5, offers: 2 },
-  { company: 'Enterprise Ltd', applications: 6, interviews: 2, offers: 0 },
-  { company: 'Innovation Co', applications: 10, interviews: 4, offers: 1 },
-  { company: 'Digital Solutions', applications: 7, interviews: 3, offers: 1 },
-];
-
 export default function StatsPage() {
+  const [stats, setStats] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch('/api/stats');
+        if (!response.ok) throw new Error('Failed to fetch stats');
+        const data = await response.json();
+        setStats(data);
+      } catch (err: any) {
+        setError(err.message || 'Unknown error');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchStats();
+  }, []);
+
+  // Prepare data for charts
+  const dailyApplications = stats?.dailyApplications || [];
+  // Pie chart data for status (using available API fields)
+  const statusData = [
+    { name: 'Take Home', value: stats?.takeHomeAssignments?.count || 0, color: '#3B82F6' },
+    { name: 'Interviews', value: stats?.interviews?.count || 0, color: '#F59E0B' },
+    // You can add more statuses if your API provides them
+  ];
+
   return (
     <div className="h-screen flex flex-col bg-gray-50">
       {/* Fixed Header */}
@@ -65,27 +60,49 @@ export default function StatsPage() {
           <p className="text-gray-600 mt-2">Track your job search progress and insights</p>
         </div>
       </div>
-
       {/* Scrollable Content */}
       <div className="flex-1 overflow-y-auto">
         <div className="p-6 pb-12">
           <div className="max-w-7xl mx-auto">
+            {/* Loading/Error States */}
+            {loading && (
+              <div className="text-center py-12 text-gray-500">Loading statistics...</div>
+            )}
+            {error && (
+              <div className="text-center py-12 text-red-500">{error}</div>
+            )}
+            {!loading && !error && stats && (
+              <>
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
               <div className="bg-white rounded-lg shadow p-6">
                 <div className="flex items-center">
-                  <div className="p-2 bg-blue-100 rounded-lg">
+                  <div className="flex items-center justify-center h-10 w-10 bg-blue-100 rounded-lg">
                     <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
                   </div>
                   <div className="ml-4">
                     <p className="text-sm font-medium text-gray-600">Total Applications</p>
-                    <p className="text-2xl font-semibold text-gray-900">111</p>
+                        <p className="text-2xl font-semibold text-gray-900">{stats.totalApplications}</p>
                   </div>
                 </div>
               </div>
-
+              {/* Take Home Assignments Card - moved before Interviews, with new icon and color */}
+              <div className="bg-white rounded-lg shadow p-6">
+                <div className="flex items-center">
+                  <div className="p-2 bg-cyan-100 rounded-lg">
+                    <svg className="w-6 h-6 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2a2 2 0 012-2h2a2 2 0 012 2v2m-6 4h6a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  <div className="ml-4">
+                        <p className="text-sm font-medium text-gray-600">Take Home Assignments</p>
+                        <p className="text-2xl font-semibold text-gray-900">{stats.takeHomeAssignments.count}</p>
+                        <p className="text-xs text-gray-500">{stats.takeHomeAssignments.percentage}% of applications</p>
+                  </div>
+                </div>
+              </div>
               <div className="bg-white rounded-lg shadow p-6">
                 <div className="flex items-center">
                   <div className="p-2 bg-yellow-100 rounded-lg">
@@ -95,11 +112,12 @@ export default function StatsPage() {
                   </div>
                   <div className="ml-4">
                     <p className="text-sm font-medium text-gray-600">Interviews</p>
-                    <p className="text-2xl font-semibold text-gray-900">33</p>
+                        <p className="text-2xl font-semibold text-gray-900">{stats.interviews.count}</p>
+                        <p className="text-xs text-gray-500">{stats.interviews.percentage}% of applications</p>
                   </div>
                 </div>
               </div>
-
+                  {/* Offer Rate Card (replaces Success Rate) */}
               <div className="bg-white rounded-lg shadow p-6">
                 <div className="flex items-center">
                   <div className="p-2 bg-green-100 rounded-lg">
@@ -108,46 +126,29 @@ export default function StatsPage() {
                     </svg>
                   </div>
                   <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600">Offers</p>
-                    <p className="text-2xl font-semibold text-gray-900">13</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-white rounded-lg shadow p-6">
-                <div className="flex items-center">
-                  <div className="p-2 bg-purple-100 rounded-lg">
-                    <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                    </svg>
-                  </div>
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600">Success Rate</p>
-                    <p className="text-2xl font-semibold text-gray-900">11.7%</p>
+                    <p className="text-sm font-medium text-gray-600">Offer Rate</p>
+                    <p className="text-2xl font-semibold text-gray-900">{stats.offers.count}</p>
+                    <p className="text-xs text-gray-500">{stats.offers.percentage}% of applications</p>
                   </div>
                 </div>
               </div>
             </div>
-
             {/* Charts Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
               {/* Applications Over Time */}
               <div className="bg-white rounded-lg shadow p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Applications Over Time</h3>
                 <ResponsiveContainer width="100%" height={300}>
-                  <LineChart data={applicationData}>
+                      <LineChart data={dailyApplications}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="month" />
-                    <YAxis />
+                        <XAxis dataKey="date" />
+                        <YAxis allowDecimals={false} />
                     <Tooltip />
                     <Legend />
-                    <Line type="monotone" dataKey="applications" stroke="#3B82F6" strokeWidth={2} />
-                    <Line type="monotone" dataKey="interviews" stroke="#F59E0B" strokeWidth={2} />
-                    <Line type="monotone" dataKey="offers" stroke="#10B981" strokeWidth={2} />
+                        <Line type="monotone" dataKey="count" stroke="#3B82F6" strokeWidth={2} />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
-
               {/* Application Status Distribution */}
               <div className="bg-white rounded-lg shadow p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Application Status</h3>
@@ -172,77 +173,23 @@ export default function StatsPage() {
                 </ResponsiveContainer>
               </div>
             </div>
-
-            {/* Additional Charts */}
+                {/* Placeholders for additional charts and recent activity */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-              {/* Weekly Activity */}
               <div className="bg-white rounded-lg shadow p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Weekly Activity</h3>
-                <ResponsiveContainer width="100%" height={300}>
-                  <AreaChart data={weeklyActivity}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="day" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Area type="monotone" dataKey="applications" stackId="1" stroke="#3B82F6" fill="#3B82F6" fillOpacity={0.6} />
-                    <Area type="monotone" dataKey="interviews" stackId="1" stroke="#F59E0B" fill="#F59E0B" fillOpacity={0.6} />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
-
-              {/* Company Performance */}
-              <div className="bg-white rounded-lg shadow p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Company Performance</h3>
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={companyStats}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="company" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Bar dataKey="applications" fill="#3B82F6" />
-                    <Bar dataKey="interviews" fill="#F59E0B" />
-                    <Bar dataKey="offers" fill="#10B981" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
-
-            {/* Recent Activity */}
-            <div className="bg-white rounded-lg shadow p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
-              <div className="space-y-4">
-                <div className="flex items-center p-4 bg-gray-50 rounded-lg">
-                  <div className="w-2 h-2 bg-green-500 rounded-full mr-4"></div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-900">Application submitted to Tech Corp</p>
-                    <p className="text-xs text-gray-500">2 hours ago</p>
+                    <div className="text-gray-400 text-center py-12">(Coming soon)</div>
+                  </div>
+                  <div className="bg-white rounded-lg shadow p-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Company Performance</h3>
+                    <div className="text-gray-400 text-center py-12">(Coming soon)</div>
                   </div>
                 </div>
-                <div className="flex items-center p-4 bg-gray-50 rounded-lg">
-                  <div className="w-2 h-2 bg-yellow-500 rounded-full mr-4"></div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-900">Interview scheduled with Startup Inc</p>
-                    <p className="text-xs text-gray-500">1 day ago</p>
-                  </div>
+                <div className="bg-white rounded-lg shadow p-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
+                  <div className="text-gray-400 text-center py-12">(Coming soon)</div>
                 </div>
-                <div className="flex items-center p-4 bg-gray-50 rounded-lg">
-                  <div className="w-2 h-2 bg-green-500 rounded-full mr-4"></div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-900">Offer received from Innovation Co</p>
-                    <p className="text-xs text-gray-500">3 days ago</p>
-                  </div>
-                </div>
-                <div className="flex items-center p-4 bg-gray-50 rounded-lg">
-                  <div className="w-2 h-2 bg-red-500 rounded-full mr-4"></div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-900">Application rejected by Enterprise Ltd</p>
-                    <p className="text-xs text-gray-500">1 week ago</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+              </>
+            )}
           </div>
         </div>
       </div>

@@ -76,6 +76,7 @@ export default function ApplicationModal({
     recruiter: string;
     resume: string;
     coverLetter: string;
+    link?: string;
     steps: ApplicationStep[];
   }>({
     company: "",
@@ -84,6 +85,7 @@ export default function ApplicationModal({
     recruiter: "",
     resume: "",
     coverLetter: "",
+    link: "",
     steps: [
       {
         id: crypto.randomUUID(),
@@ -104,6 +106,7 @@ export default function ApplicationModal({
         recruiter: application.recruiter || "",
         resume: application.resume || "",
         coverLetter: application.coverLetter || "",
+        link: application.link || "",
         steps: application.steps?.map(step => ({
           ...step,
           notes: step.notes || ""
@@ -117,6 +120,7 @@ export default function ApplicationModal({
         recruiter: "",
         resume: resumeOptions.length === 1 ? resumeOptions[0]._id : "",
         coverLetter: "",
+        link: "",
         steps: [
           {
             id: crypto.randomUUID(),
@@ -152,6 +156,7 @@ export default function ApplicationModal({
         recruiter: "",
         resume: "",
         coverLetter: "",
+        link: "",
         steps: [
           {
             id: crypto.randomUUID(),
@@ -317,6 +322,21 @@ export default function ApplicationModal({
             onChange={(e) =>
               setFormData({ ...formData, recruiter: e.target.value })
             }
+            className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Link
+          </label>
+          <input
+            type="url"
+            value={formData.link || ""}
+            onChange={(e) =>
+              setFormData({ ...formData, link: e.target.value })
+            }
+            placeholder="https://..."
             className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
         </div>

@@ -97,7 +97,7 @@ export const ApplicationListElement = (props: {
             {application.jobSite}
           </a>
         </div> */}
-        <div className="mb-3">
+        {/* <div className="mb-3">
           <Label>Latest Step</Label>
           <div className="text-sm text-gray-500">
             {latestStep
@@ -106,25 +106,39 @@ export const ApplicationListElement = (props: {
                 ).toLocaleDateString()})`
               : "No steps"}
           </div>
-        </div>
-        <div className="mb-3">
+        </div> */}
+        {/* <div className="mb-3">
           <Label>Steps Progress</Label>
           <div className="text-sm text-gray-500">
             {application.steps?.length || 0} step
             {application.steps?.length !== 1 ? "s" : ""}
           </div>
-        </div>
+        </div> */}
         {application.resume && (
           <div className="mb-3">
             <Label>Resume</Label>
             <a
-              href={application.resume}
+              href={application.resumeLink}
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm text-indigo-600 hover:underline truncate block"
               onClick={(e) => e.stopPropagation()}
             >
               Open in Google Drive
+            </a>
+          </div>
+        )}
+        {application.link && (
+          <div className="mb-3">
+            <Label>Link</Label>
+            <a
+              href={application.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-indigo-600 hover:underline truncate block"
+              onClick={(e) => e.stopPropagation()}
+            >
+              View Job Posting
             </a>
           </div>
         )}
@@ -153,7 +167,7 @@ export const ApplicationListElement = (props: {
         </div>
 
         {/* Job Site */}
-        <div className="flex-1 min-w-0 px-2">
+        <div className="w-32 min-w-0 px-2">
           <Label>Job Site</Label>
           <a
             href={application.jobSite}
@@ -167,7 +181,7 @@ export const ApplicationListElement = (props: {
         </div>
 
         {/* Latest Step */}
-        <div className="flex-1 px-2">
+        {/* <div className="flex-1 px-2">
           <Label>Latest Step</Label>
           <div className="text-sm text-gray-500">
             {latestStep
@@ -176,14 +190,14 @@ export const ApplicationListElement = (props: {
                 ).toLocaleDateString()})`
               : "No steps"}
           </div>
-        </div>
+        </div> */}
 
         {/* Resume */}
-        <div className="w-32 px-2">
+        <div className="w-42 px-2">
           <Label>Resume</Label>
           {application.resume ? (
             <a
-              href={application.resume}
+              href={application.resumeLink}
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm text-indigo-600 hover:underline truncate block"
@@ -196,8 +210,26 @@ export const ApplicationListElement = (props: {
           )}
         </div>
 
+        {/* Link */}
+        <div className="w-42 px-2">
+          <Label>Link</Label>
+          {application.link ? (
+            <a
+              href={application.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-indigo-600 hover:underline truncate block"
+              onClick={(e) => e.stopPropagation()}
+            >
+              View Job Posting
+            </a>
+          ) : (
+            <div className="text-sm text-gray-500">—</div>
+          )}
+        </div>
+
         {/* Status pill */}
-        <div className="w-30 px-2">
+        <div className="w-32 px-2">
           <Label>Status</Label>
           <StatusBadge status={overallStatus} />
         </div>

@@ -7,18 +7,36 @@ import {
   ValidationError,
 } from "./errors";
 import { updateApplicationsStats } from "./resumesService";
+import Resume from "@/db/models/Resume";
 
 export async function getApplications(
-  userId: string
+  userId: string,
+  after?: string,
+  before?: string
 ): Promise<ApplicationType[]> {
   if (!userId) {
     throw new UnauthorizedError();
   }
 
   await connectDB();
-  const applications = await Application.find({ userId }).sort({
+  const query: any = { userId };
+  if (after || before) {
+    query.createdAt = {};
+    if (after) {
+      query.createdAt.$gte = new Date(after);
+    }
+    if (before) {
+      query.createdAt.$lte = new Date(before);
+    }
+    // Remove createdAt if empty
+    if (Object.keys(query.createdAt).length === 0) {
+      delete query.createdAt;
+    }
+  }
+  const applications = await Application.find(query).sort({
     createdAt: -1,
   });
+  const resumes = await Resume.find({ userId });
   return applications.map((app) => ({
     id: app._id.toString(),
     company: app.company,
@@ -32,7 +50,9 @@ export async function getApplications(
     })),
     createdAt: app.createdAt.toISOString(),
     resume: app.resume,
+    resumeLink: resumes.find((r) => r._id.toString() === app.resume)?.link,
     coverLetter: app.coverLetter,
+    link: app.link,
     recruiter: app.recruiter,
   }));
 }
@@ -131,7 +151,7 @@ export async function updateApplication(
 
   await connectDB();
   const updateData: any = { ...application };
-  
+
   if (application.steps) {
     updateData.steps = application.steps.map(step => ({
       ...step,
@@ -152,6 +172,8 @@ export async function updateApplication(
     throw new ApplicationNotFoundError(id);
   }
 
+  const resumes = await Resume.find({ userId });
+
   return {
     id: updatedApplication._id.toString(),
     company: updatedApplication.company,
@@ -165,7 +187,9 @@ export async function updateApplication(
     })),
     createdAt: updatedApplication.createdAt.toISOString(),
     resume: updatedApplication.resume,
+    resumeLink: resumes.find((r) => r._id.toString() === updatedApplication.resume)?.link,
     coverLetter: updatedApplication.coverLetter,
+    link: updatedApplication.link,
     recruiter: updatedApplication.recruiter,
   };
 }
