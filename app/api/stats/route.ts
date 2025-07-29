@@ -27,7 +27,7 @@ export async function GET() {
         // Count applications with interviews (including Phone Screen, Interview, Final Interview)
         const interviews = applications.filter(app =>
             app.steps.some(step =>
-                ['Phone Screen', 'Interview', 'Final Interview'].includes(step.type)
+                ['Interview'].includes(step.type)
             )
         ).length;
 

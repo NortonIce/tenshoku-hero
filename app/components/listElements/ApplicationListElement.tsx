@@ -17,7 +17,7 @@ const getOverallStatus = (application: Application) => {
   if (!latestStep) return "Applied";
 
   // Map step types to simplified status for display
-  if (latestStep.type === "Rejected" || latestStep.type === "Withdrawn") {
+  if (latestStep.type === "Rejected") {
     return "Rejected";
   }
   if (latestStep.type === "Offer") {
@@ -26,7 +26,7 @@ const getOverallStatus = (application: Application) => {
   if (latestStep.type.includes("Interview")) {
     return "Interview";
   }
-  if (latestStep.type === "Take Home Assignment") {
+  if (latestStep.type === "Recieved Take Home Assignment") {
     return "Take home assignment";
   }
   return "Applied";
