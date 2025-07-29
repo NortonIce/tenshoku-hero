@@ -21,7 +21,7 @@ export async function GET() {
 
         // Count applications with take home assignments
         const takeHomeAssignments = applications.filter(app =>
-            app.steps.some(step => step.type === 'Take Home Assignment')
+            app.steps.some(step => step.type === 'Recieved Take Home Assignment')
         ).length;
 
         // Count applications with interviews (including Phone Screen, Interview, Final Interview)
