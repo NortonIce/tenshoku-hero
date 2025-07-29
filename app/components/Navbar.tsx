@@ -52,13 +52,12 @@ export default function Navbar() {
             </div>
             <span className="text-sm font-medium text-gray-700">Resumes</span>
           </Link>
-
-          <Link href="/quests" className="flex flex-col items-center group">
+          {/* <Link href="/quests" className="flex flex-col items-center group">
             <div className="w-16 h-16 rounded-xl bg-white/5 backdrop-blur-sm group-hover:bg-white/10 transition border border-gray-200/20 flex items-center justify-center mb-2">
               <TrophyIcon className="w-8 h-8 text-gray-700" />
             </div>
             <span className="text-sm font-medium text-gray-700">Quests</span>
-          </Link>
+          </Link> */}
         </div>
       </nav>
 
@@ -143,8 +142,7 @@ export default function Navbar() {
               </div>
               <span className="text-sm font-medium text-gray-700">Resumes</span>
             </Link>
-
-            <Link
+            {/* <Link
               href="/quests"
               onClick={handleMenuItemClick}
               className="flex flex-col items-center group cursor-pointer"
@@ -153,7 +151,7 @@ export default function Navbar() {
                 <TrophyIcon className="w-8 h-8 text-gray-700" />
               </div>
               <span className="text-sm font-medium text-gray-700">Quests</span>
-            </Link>
+            </Link> */}
           </div>
         </div>
       )}

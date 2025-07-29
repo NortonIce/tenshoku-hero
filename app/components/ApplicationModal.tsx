@@ -21,14 +21,12 @@ interface ApplicationModalProps {
 
 const stepTypes: ApplicationStepType[] = [
   "Applied",
-  "Phone Screen",
-  "Take Home Assignment",
+  "Recieved Take Home Assignment",
+  "Sent Take Home Assignment",
   "Interview",
-  "Final Interview",
-  "Reference Check",
   "Offer",
   "Rejected",
-  "Withdrawn",
+  "Ignored",
 ];
 
 // Hardcoded position suggestions
@@ -92,6 +90,7 @@ export default function ApplicationModal({
         type: "Applied" as ApplicationStepType,
         date: new Date().toISOString().split("T")[0],
         notes: "",
+        order: 0,
       },
     ],
   });
@@ -127,6 +126,7 @@ export default function ApplicationModal({
             type: "Applied" as ApplicationStepType,
             date: new Date().toISOString().split("T")[0],
             notes: "",
+            order: 0,
           },
         ],
       });
@@ -163,6 +163,7 @@ export default function ApplicationModal({
             type: "Applied" as ApplicationStepType,
             date: new Date().toISOString().split("T")[0],
             notes: "",
+            order: 0,
           },
         ],
       });
@@ -175,6 +176,7 @@ export default function ApplicationModal({
       type: "Phone Screen" as ApplicationStepType,
       date: new Date().toISOString().split("T")[0],
       notes: "",
+      order: formData.steps.length, // Set order to next index
     };
     setFormData({
       ...formData,
@@ -184,9 +186,12 @@ export default function ApplicationModal({
 
   const removeStep = (stepId: string) => {
     if (formData.steps.length <= 1) return; // Keep at least one step
+    const filteredSteps = formData.steps.filter((step) => step.id !== stepId);
+    // Re-index order
+    const reindexedSteps = filteredSteps.map((step, idx) => ({ ...step, order: idx }));
     setFormData({
       ...formData,
-      steps: formData.steps.filter((step) => step.id !== stepId),
+      steps: reindexedSteps,
     });
   };
 
@@ -222,6 +227,39 @@ export default function ApplicationModal({
 
   const modalTitle =
     mode === "add" ? "Add New Application" : "Edit Application";
+
+  // Helper to get quick step options based on last step
+  const getQuickStepOptions = () => {
+    if (!formData.steps.length) return [];
+    const lastType = formData.steps[formData.steps.length - 1].type;
+    switch (lastType) {
+      case "Applied":
+        return ["Ignored", "Recieved Take Home Assignment", "Interview"];
+      case "Recieved Take Home Assignment":
+        return ["Sent Take Home Assignment"];
+      case "Sent Take Home Assignment":
+        return ["Rejected", "Interview"];
+      case "Interview":
+        return ["Rejected", "Offer"];
+      default:
+        return [];
+    }
+  };
+
+  // Handler to add a quick step
+  const addQuickStep = (type: ApplicationStepType) => {
+    const newStep: ApplicationStep = {
+      id: crypto.randomUUID(),
+      type,
+      date: new Date().toISOString().split("T")[0],
+      notes: "",
+      order: formData.steps.length, // Set order to next index
+    };
+    setFormData({
+      ...formData,
+      steps: [...formData.steps, newStep],
+    });
+  };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={modalTitle} size="2xl">
@@ -346,24 +384,43 @@ export default function ApplicationModal({
             <label className="block text-sm font-medium text-gray-700">
               Application Steps
             </label>
-            <button
-              type="button"
-              onClick={addStep}
-              className="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-blue-600 bg-blue-50 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            >
-              <PlusIcon className="h-4 w-4 mr-1" />
-              Add Step
-            </button>
+            <div className="flex items-center gap-2">
+              {getQuickStepOptions().map((type) => (
+                <button
+                  key={type}
+                  type="button"
+                  onClick={() => addQuickStep(type as ApplicationStepType)}
+                  className={`inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2
+                    ${type === "Ignored" || type === "Rejected"
+                      ? "text-red-700 bg-red-50 hover:bg-red-100 focus:ring-red-500"
+                      : "text-green-700 bg-green-50 hover:bg-green-100 focus:ring-green-500"}
+                  `}
+                >
+                  <PlusIcon className="h-3 w-3 mr-1" />
+                  {type}
+                </button>
+              ))}
+              <button
+                type="button"
+                onClick={addStep}
+                className="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-blue-600 bg-blue-50 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              >
+                <PlusIcon className="h-4 w-4 mr-1" />
+                Add Step
+              </button>
+            </div>
           </div>
           <div className="space-y-4">
-            {formData.steps.map((step, index) => (
+            {[...formData.steps]
+              .sort((a, b) => a.order - b.order)
+              .map((step, index) => (
               <div
                 key={step.id}
                 className="border border-gray-200 rounded-lg p-4 bg-gray-50"
               >
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-sm font-medium text-gray-700">
-                    Step {index + 1}
+                    Step {step.order + 1}
                   </span>
                   {formData.steps.length > 1 && (
                     <button

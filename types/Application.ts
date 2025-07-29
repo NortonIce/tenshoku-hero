@@ -1,19 +1,18 @@
 export type ApplicationStepType =
   | "Applied"
-  | "Phone Screen"
-  | "Take Home Assignment"
+  | "Recieved Take Home Assignment"
+  | "Sent Take Home Assignment"
   | "Interview"
-  | "Final Interview"
-  | "Reference Check"
   | "Offer"
   | "Rejected"
-  | "Withdrawn";
+  | "Ignored";
 
 export type ApplicationStep = {
   id: string;
   type: ApplicationStepType;
   date: string;
   notes?: string;
+  order: number;
 };
 
 export type Application = {

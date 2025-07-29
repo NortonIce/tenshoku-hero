@@ -7,14 +7,12 @@ const applicationStepSchema = new mongoose.Schema(
       required: true,
       enum: [
         "Applied",
-        "Phone Screen",
-        "Take Home Assignment",
-        "Interview Round 1",
-        "Final Interview",
-        "Reference Check",
+        "Recieved Take Home Assignment",
+        "Sent Take Home Assignment",
+        "Interview",
         "Offer",
         "Rejected",
-        "Withdrawn",
+        "Ignored",
       ],
     },
     date: {
@@ -24,6 +22,10 @@ const applicationStepSchema = new mongoose.Schema(
     notes: {
       type: String,
       required: false,
+    },
+    order: {
+      type: Number,
+      required: true,
     },
   },
   {
@@ -42,7 +44,7 @@ const applicationSchema = new mongoose.Schema({
   },
   jobSite: {
     type: String,
-    required: true,
+    required: false,
   },
   steps: [applicationStepSchema],
   resume: {

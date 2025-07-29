@@ -57,6 +57,7 @@ export async function POST(request: Request) {
                 { status: 401 }
             );
         }
+        console.log(error)
         return NextResponse.json(
             { error: 'Failed to create application' },
             { status: 500 }

@@ -47,6 +47,7 @@ export async function getApplications(
       type: step.type,
       date: step.date.toISOString(),
       notes: step.notes,
+      order: step.order,
     })),
     createdAt: app.createdAt.toISOString(),
     resume: app.resume,
@@ -69,13 +70,12 @@ export async function addApplication(
   if (
     !application.company ||
     !application.position ||
-    !application.jobSite ||
     !application.steps ||
     !Array.isArray(application.steps) ||
     application.steps.length === 0
   ) {
     throw new ValidationError(
-      "Missing required fields: company, position, jobSite, and at least one step are required"
+      "Missing required fields: company, position, and at least one step are required"
     );
   }
 
