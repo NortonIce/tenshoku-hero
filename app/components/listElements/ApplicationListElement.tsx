@@ -7,7 +7,7 @@ const getLatestStep = (application: Application) => {
   if (!application.steps || application.steps.length === 0) return null;
   // Sort by date and return the most recent one
   return application.steps
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .sort((a, b) => a.order - b.order)
     .findLast((x) => true);
 };
 
@@ -27,7 +27,10 @@ const getOverallStatus = (application: Application) => {
     return "Interview";
   }
   if (latestStep.type === "Recieved Take Home Assignment") {
-    return "Take home assignment";
+    return "Recieved Take Home Assignment";
+  }
+  if (latestStep.type === "Sent Take Home Assignment") {
+    return "Sent Take Home Assignment";
   }
   return "Applied";
 };

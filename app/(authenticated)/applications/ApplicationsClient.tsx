@@ -113,7 +113,7 @@ export default function ApplicationsClient({
   };
 
   return (
-    <div className="h-screen flex flex-col">
+    <div className="flex flex-col flex-1 min-h-0">
       {/* Header */}
       <div className="flex m-2 justify-between items-center">
         <PrimaryButton
@@ -140,7 +140,7 @@ export default function ApplicationsClient({
       </div>
 
       {/* Main content */}
-      <div className="flex-1 overflow-y-auto gap-6 ">
+      <div className="flex-1 min-h-0 overflow-y-auto gap-6">
         {error ? (
           <div className="flex items-center justify-center h-full">
             <div className="text-red-500">{error}</div>

@@ -414,73 +414,73 @@ export default function ApplicationModal({
             {[...formData.steps]
               .sort((a, b) => a.order - b.order)
               .map((step, index) => (
-              <div
-                key={step.id}
-                className="border border-gray-200 rounded-lg p-4 bg-gray-50"
-              >
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-sm font-medium text-gray-700">
-                    Step {step.order + 1}
-                  </span>
-                  {formData.steps.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => removeStep(step.id)}
-                      className="text-red-500 hover:text-red-700"
-                    >
-                      <XMarkIcon className="h-4 w-4" />
-                    </button>
-                  )}
+                <div
+                  key={step.id}
+                  className="border border-gray-200 rounded-lg p-4 bg-gray-50"
+                >
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-sm font-medium text-gray-700">
+                      Step {step.order + 1}
+                    </span>
+                    {formData.steps.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => removeStep(step.id)}
+                        className="text-red-500 hover:text-red-700"
+                      >
+                        <XMarkIcon className="h-4 w-4" />
+                      </button>
+                    )}
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">
+                        Step Type
+                      </label>
+                      <select
+                        value={step.type}
+                        onChange={(e) =>
+                          updateStep(step.id, "type", e.target.value)
+                        }
+                        className="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      >
+                        {stepTypes.map((type) => (
+                          <option key={type} value={type}>
+                            {type}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">
+                        Date
+                      </label>
+                      <input
+                        type="date"
+                        value={step.date.split("T")[0]}
+                        onChange={(e) =>
+                          updateStep(step.id, "date", e.target.value)
+                        }
+                        className="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">
+                        Notes (Optional)
+                      </label>
+                      <input
+                        type="text"
+                        value={step.notes || ""}
+                        onChange={(e) =>
+                          updateStep(step.id, "notes", e.target.value)
+                        }
+                        className="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        placeholder="Add notes..."
+                      />
+                    </div>
+                  </div>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                  <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1">
-                      Step Type
-                    </label>
-                    <select
-                      value={step.type}
-                      onChange={(e) =>
-                        updateStep(step.id, "type", e.target.value)
-                      }
-                      className="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                    >
-                      {stepTypes.map((type) => (
-                        <option key={type} value={type}>
-                          {type}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1">
-                      Date
-                    </label>
-                    <input
-                      type="date"
-                      value={step.date.split("T")[0]}
-                      onChange={(e) =>
-                        updateStep(step.id, "date", e.target.value)
-                      }
-                      className="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1">
-                      Notes (Optional)
-                    </label>
-                    <input
-                      type="text"
-                      value={step.notes || ""}
-                      onChange={(e) =>
-                        updateStep(step.id, "notes", e.target.value)
-                      }
-                      className="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                      placeholder="Add notes..."
-                    />
-                  </div>
-                </div>
-              </div>
-            ))}
+              ))}
           </div>
         </div>
 
