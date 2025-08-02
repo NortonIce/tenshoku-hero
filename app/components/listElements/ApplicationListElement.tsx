@@ -15,24 +15,11 @@ const getLatestStep = (application: Application) => {
 const getOverallStatus = (application: Application) => {
   const latestStep = getLatestStep(application);
   if (!latestStep) return "Applied";
-
   // Map step types to simplified status for display
-  if (latestStep.type === "Rejected") {
-    return "Rejected";
-  }
-  if (latestStep.type === "Offer") {
-    return "Offer";
-  }
   if (latestStep.type.includes("Interview")) {
     return "Interview";
   }
-  if (latestStep.type === "Recieved Take Home Assignment") {
-    return "Recieved Take Home Assignment";
-  }
-  if (latestStep.type === "Sent Take Home Assignment") {
-    return "Sent Take Home Assignment";
-  }
-  return "Applied";
+  return latestStep.type;
 };
 
 export const ApplicationListElement = (props: {
@@ -56,9 +43,8 @@ export const ApplicationListElement = (props: {
 
   // responsive wrappers
   const mobileWr = `block ${alwaysCompact ? "" : "md:hidden"}`;
-  const desktopWr = `hidden ${
-    alwaysCompact ? "" : "md:flex items-center justify-between"
-  }`;
+  const desktopWr = `hidden ${alwaysCompact ? "" : "md:flex items-center justify-between"
+    }`;
 
   // a tiny Label component
   const Label = ({ children }: { children: React.ReactNode }) => (
@@ -170,7 +156,7 @@ export const ApplicationListElement = (props: {
         </div>
 
         {/* Job Site */}
-        <div className="w-32 min-w-0 px-2">
+        <div className="w-38 min-w-0 px-2">
           <Label>Job Site</Label>
           <a
             href={application.jobSite}
@@ -196,7 +182,7 @@ export const ApplicationListElement = (props: {
         </div> */}
 
         {/* Resume */}
-        <div className="w-42 px-2">
+        <div className="w-48 px-2">
           <Label>Resume</Label>
           {application.resume ? (
             <a
@@ -214,7 +200,7 @@ export const ApplicationListElement = (props: {
         </div>
 
         {/* Link */}
-        <div className="w-42 px-2">
+        <div className="w-48 px-2">
           <Label>Link</Label>
           {application.link ? (
             <a

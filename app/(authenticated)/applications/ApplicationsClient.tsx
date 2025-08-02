@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Application } from "@/types/Application";
+import { Application, ApplicationStep } from "@/types/Application";
 import ApplicationModal from "@/app/components/ApplicationModal";
 import { PrimaryButton } from "@/app/components/buttons/PrimaryButton";
 import { ApplicationListElement } from "@/app/components/listElements/ApplicationListElement";
@@ -17,6 +17,8 @@ export default function ApplicationsClient({
   const [modalMode, setModalMode] = useState<"add" | "edit">("add");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("All");
 
   useEffect(() => {
     setApplications(initialApplications);
@@ -112,6 +114,31 @@ export default function ApplicationsClient({
     }
   };
 
+  // Helper to get the latest step
+  const getLatestStep = (application: Application): ApplicationStep | null => {
+    if (!application.steps || application.steps.length === 0) return null;
+    return application.steps
+      .sort((a: ApplicationStep, b: ApplicationStep) => a.order - b.order)
+      .findLast((x: ApplicationStep) => true) || null;
+  };
+  // Helper to get overall status
+  const getOverallStatus = (application: Application): string => {
+    const latestStep = getLatestStep(application);
+    if (!latestStep) return "Applied";
+    if (latestStep.type.includes("Interview")) {
+      return "Interview";
+    }
+    return latestStep.type;
+  };
+
+  // Filter applications by company name and status
+  const filteredApplications = applications.filter((application: Application) => {
+    const matchesSearch = application.company.toLowerCase().includes(search.toLowerCase());
+    const status = getOverallStatus(application);
+    const matchesStatus = statusFilter === "All" || status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
+
   return (
     <div className="flex flex-col flex-1 min-h-0">
       {/* Header */}
@@ -137,6 +164,31 @@ export default function ApplicationsClient({
           </svg>
           Add new application
         </PrimaryButton>
+        <div className="flex gap-2 items-center ml-4">
+          <input
+            type="text"
+            placeholder="Search by company name..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="mt-1 block px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            style={{ minWidth: 220 }}
+          />
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="mt-1 block px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            style={{ minWidth: 180 }}
+          >
+            <option value="All">All Statuses</option>
+            <option value="Applied">Applied</option>
+            <option value="Recieved Take Home Assignment">Recieved Take Home Assignment</option>
+            <option value="Sent Take Home Assignment">Sent Take Home Assignment</option>
+            <option value="Interview">Interview</option>
+            <option value="Offer">Offer</option>
+            <option value="Rejected">Rejected</option>
+            <option value="Ignored">Ignored</option>
+          </select>
+        </div>
       </div>
 
       {/* Main content */}
@@ -153,7 +205,7 @@ export default function ApplicationsClient({
               </div>
             ) : (
               <div className="space-y-4">
-                {applications.map((application) => (
+                {filteredApplications.map((application) => (
                   <ApplicationListElement
                     key={application.id}
                     application={application}
