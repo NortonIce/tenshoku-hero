@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Application, ApplicationStep } from "@/types/Application";
 import ApplicationModal from "@/app/components/ApplicationModal";
 import { PrimaryButton } from "@/app/components/buttons/PrimaryButton";
@@ -18,7 +18,42 @@ export default function ApplicationsClient({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("All");
+  const [statusFilters, setStatusFilters] = useState<string[]>([]);
+  const [isStatusPopupOpen, setIsStatusPopupOpen] = useState(false);
+  const statusButtonRef = useRef<HTMLButtonElement | null>(null);
+  const statusPopupRef = useRef<HTMLDivElement | null>(null);
+
+  // Close popup on outside click
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        statusPopupRef.current &&
+        !statusPopupRef.current.contains(event.target as Node) &&
+        statusButtonRef.current &&
+        !statusButtonRef.current.contains(event.target as Node)
+      ) {
+        setIsStatusPopupOpen(false);
+      }
+    }
+    if (isStatusPopupOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isStatusPopupOpen]);
+
+  const statusOptions = [
+    "Applied",
+    "Recieved Take Home Assignment",
+    "Sent Take Home Assignment",
+    "Interview",
+    "Offer",
+    "Rejected",
+    "Ignored",
+  ];
 
   useEffect(() => {
     setApplications(initialApplications);
@@ -131,11 +166,11 @@ export default function ApplicationsClient({
     return latestStep.type;
   };
 
-  // Filter applications by company name and status
+  // Filter applications by company name and selected statuses
   const filteredApplications = applications.filter((application: Application) => {
     const matchesSearch = application.company.toLowerCase().includes(search.toLowerCase());
     const status = getOverallStatus(application);
-    const matchesStatus = statusFilter === "All" || status === statusFilter;
+    const matchesStatus = statusFilters.length === 0 || statusFilters.includes(status);
     return matchesSearch && matchesStatus;
   });
 
@@ -164,7 +199,7 @@ export default function ApplicationsClient({
           </svg>
           Add new application
         </PrimaryButton>
-        <div className="flex gap-2 items-center ml-4">
+        <div className="flex gap-2 items-center ml-4 relative">
           <input
             type="text"
             placeholder="Search by company name..."
@@ -173,21 +208,60 @@ export default function ApplicationsClient({
             className="mt-1 block px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             style={{ minWidth: 220 }}
           />
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="mt-1 block px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            style={{ minWidth: 180 }}
+          <button
+            ref={statusButtonRef}
+            type="button"
+            className="mt-1 block px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 flex items-center gap-2"
+            onClick={() => setIsStatusPopupOpen((v) => !v)}
           >
-            <option value="All">All Statuses</option>
-            <option value="Applied">Applied</option>
-            <option value="Recieved Take Home Assignment">Recieved Take Home Assignment</option>
-            <option value="Sent Take Home Assignment">Sent Take Home Assignment</option>
-            <option value="Interview">Interview</option>
-            <option value="Offer">Offer</option>
-            <option value="Rejected">Rejected</option>
-            <option value="Ignored">Ignored</option>
-          </select>
+            <span>Status{statusFilters.length > 0 ? ` (${statusFilters.length})` : ""}</span>
+            <svg className={`w-4 h-4 transition-transform ${isStatusPopupOpen ? "rotate-180" : ""}`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
+          </button>
+          {isStatusPopupOpen && (
+            <div
+              ref={statusPopupRef}
+              className="absolute z-20 top-12 right-0 w-64 bg-white border border-gray-200 rounded-md shadow-lg p-3 flex flex-col gap-1"
+            >
+              <div className="font-semibold text-sm mb-2">Filter by Status</div>
+              <div className="max-h-60 overflow-y-auto flex flex-col gap-1">
+                {statusOptions.map((status) => (
+                  <label key={status} className="flex items-center gap-2 cursor-pointer px-2 py-1 rounded hover:bg-blue-50">
+                    <input
+                      type="checkbox"
+                      checked={statusFilters.includes(status)}
+                      onChange={() => {
+                        setStatusFilters((prev) =>
+                          prev.includes(status)
+                            ? prev.filter((s) => s !== status)
+                            : [...prev, status]
+                        );
+                      }}
+                      className="accent-blue-600"
+                    />
+                    <span className="text-sm">{status}</span>
+                  </label>
+                ))}
+              </div>
+              <div className="flex justify-between mt-2 gap-2">
+                <button
+                  type="button"
+                  className="text-xs text-blue-600 hover:underline px-2 py-1 rounded disabled:opacity-50"
+                  onClick={() => setStatusFilters(statusOptions)}
+                  disabled={statusFilters.length === statusOptions.length}
+                >
+                  Select All
+                </button>
+                <button
+                  type="button"
+                  className="text-xs text-blue-600 hover:underline px-2 py-1 rounded disabled:opacity-50"
+                  onClick={() => setStatusFilters([])}
+                  disabled={statusFilters.length === 0}
+                >
+                  Clear
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
