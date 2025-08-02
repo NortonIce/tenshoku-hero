@@ -75,7 +75,7 @@ export default function Modal({
                 className={`relative w-full max-h-[100vh] sm:max-h-[90vh] transform overflow-hidden rounded-t-lg sm:rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 ${sizeClasses[size]} flex flex-col`}
               >
                 {/* Header */}
-                <div className="flex items-start justify-between px-4 pt-5 pb-4 sm:px-6 border-b border-gray-200 flex-shrink-0">
+                <div className="sticky top-0 z-10 bg-white flex items-start justify-between px-4 pt-5 pb-4 sm:px-6 border-b border-gray-200 flex-shrink-0">
                   <Dialog.Title
                     as="h3"
                     className="text-lg font-semibold leading-6 text-gray-900"

@@ -164,6 +164,7 @@ export default function ApplicationsClient({
                     }}
                   />
                 ))}
+                <br />
               </div>
             )}
           </div>

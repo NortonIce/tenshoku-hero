@@ -38,4 +38,8 @@ body,
   background-color: whitesmoke;
 }
 
+.h-dvh {
+  height: 100dvh;
+}
+
 

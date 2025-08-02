@@ -26,6 +26,7 @@ export default function StatusBadge({
               ${status === "Interview" ? "bg-green-100 text-green-800" : ""}
               ${status === "Rejected" ? "bg-red-100    text-red-800" : ""}
               ${status === "Offer" ? "bg-purple-100 text-purple-800" : ""}
+              ${status === "Ignored" ? "bg-gray-200 text-gray-600" : ""}
             `}
     >
       {status}

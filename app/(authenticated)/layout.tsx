@@ -9,7 +9,7 @@ export default function AuthenticatedLayout({
   return (
     <div className="flex min-h-screen">
       <Navbar />
-      <main className="flex-1 flex flex-col h-screen overflow-hidden">
+      <main className="flex-1 flex flex-col h-dvh overflow-hidden">
         <TopBar />
         {children}
       </main>
