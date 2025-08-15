@@ -1,14 +1,38 @@
 "use client";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, type ElementType } from "react";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 import {
   ClipboardDocumentListIcon,
   DocumentTextIcon,
-  TrophyIcon,
   ChartPieIcon,
+  HomeIcon,
 } from "@heroicons/react/24/outline";
+
+type NavbarItem = {
+  href: string;
+  label: string;
+  icon: ElementType;
+  showOn: Array<"desktop" | "mobile">;
+};
+
+const NAV_ITEMS: NavbarItem[] = [
+  { href: "/home", label: "Home", icon: HomeIcon, showOn: ["desktop"] },
+  {
+    href: "/applications",
+    label: "Applications",
+    icon: ClipboardDocumentListIcon,
+    showOn: ["desktop", "mobile"],
+  },
+  {
+    href: "/resumes",
+    label: "Resumes",
+    icon: DocumentTextIcon,
+    showOn: ["desktop", "mobile"],
+  },
+  { href: "/home", label: "Home", icon: ChartPieIcon, showOn: ["mobile"] },
+];
 
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -28,45 +52,24 @@ export default function Navbar() {
       {/* Desktop/Tablet Navbar */}
       <nav className="h-screen p-2 bg-transparent flex items-center hidden sm:flex">
         <div className="flex flex-col space-y-6">
-          <Link href="/stats" className="flex flex-col items-center group">
-            <div className="w-16 h-16 rounded-xl bg-white/5 backdrop-blur-sm group-hover:bg-white/10 transition border border-gray-200/20 flex items-center justify-center mb-2">
-              <ChartPieIcon className="w-8 h-8 text-gray-700" />
-            </div>
-            <span className="text-sm font-medium text-gray-700">Stats</span>
-          </Link>
-          <Link
-            href="/applications"
-            className="flex flex-col items-center group"
-          >
-            <div className="w-16 h-16 rounded-xl bg-white/5 backdrop-blur-sm group-hover:bg-white/10 transition border border-gray-200/20 flex items-center justify-center mb-2">
-              <ClipboardDocumentListIcon className="w-8 h-8 text-gray-700" />
-            </div>
-            <span className="text-sm font-medium text-gray-700">
-              Applications
-            </span>
-          </Link>
-
-          <Link href="/resumes" className="flex flex-col items-center group">
-            <div className="w-16 h-16 rounded-xl bg-white/5 backdrop-blur-sm group-hover:bg-white/10 transition border border-gray-200/20 flex items-center justify-center mb-2">
-              <DocumentTextIcon className="w-8 h-8 text-gray-700" />
-            </div>
-            <span className="text-sm font-medium text-gray-700">Resumes</span>
-          </Link>
-          {/* <Link href="/quests" className="flex flex-col items-center group">
-            <div className="w-16 h-16 rounded-xl bg-white/5 backdrop-blur-sm group-hover:bg-white/10 transition border border-gray-200/20 flex items-center justify-center mb-2">
-              <TrophyIcon className="w-8 h-8 text-gray-700" />
-            </div>
-            <span className="text-sm font-medium text-gray-700">Quests</span>
-          </Link> */}
+          {NAV_ITEMS.filter((item) => item.showOn.includes("desktop")).map(
+            ({ href, label, icon: Icon }) => (
+              <Link key={href} href={href} className="flex flex-col items-center group">
+                <div className="w-16 h-16 rounded-xl bg-white/5 backdrop-blur-sm group-hover:bg-white/10 transition border border-gray-200/20 flex items-center justify-center mb-2">
+                  <Icon className="w-8 h-8 text-gray-700" />
+                </div>
+                <span className="text-sm font-medium text-gray-700">{label}</span>
+              </Link>
+            )
+          )}
         </div>
       </nav>
 
       {/* Mobile Menu Button */}
       <button
         onClick={() => setIsMobileMenuOpen(true)}
-        className={`sm:hidden fixed bottom-6 right-6 z-50 bg-white/80 backdrop-blur-md border border-gray-200/40 shadow-lg rounded-full w-16 h-16 flex items-center justify-center cursor-pointer transition-opacity ${
-          isMobileMenuOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'
-        }`}
+        className={`sm:hidden fixed bottom-6 right-6 z-50 bg-white/80 backdrop-blur-md border border-gray-200/40 shadow-lg rounded-full w-16 h-16 flex items-center justify-center cursor-pointer transition-opacity ${isMobileMenuOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'
+          }`}
         aria-label="Open menu"
       >
         <svg
@@ -107,51 +110,21 @@ export default function Navbar() {
                 />
               </svg>
             </button>
-
-            <Link
-              href="/stats"
-              onClick={handleMenuItemClick}
-              className="flex flex-col items-center group cursor-pointer"
-            >
-              <div className="w-16 h-16 rounded-xl bg-white/5 backdrop-blur-sm group-hover:bg-white/10 transition border border-gray-200/20 flex items-center justify-center mb-2">
-                <ChartPieIcon className="w-8 h-8 text-gray-700" />
-              </div>
-              <span className="text-sm font-medium text-gray-700">Stats</span>
-            </Link>
-
-            <Link
-              href="/applications"
-              onClick={handleMenuItemClick}
-              className="flex flex-col items-center group cursor-pointer"
-            >
-              <div className="w-16 h-16 rounded-xl bg-white/5 backdrop-blur-sm group-hover:bg-white/10 transition border border-gray-200/20 flex items-center justify-center mb-2">
-                <ClipboardDocumentListIcon className="w-8 h-8 text-gray-700" />
-              </div>
-              <span className="text-sm font-medium text-gray-700">
-                Applications
-              </span>
-            </Link>
-
-            <Link
-              href="/resumes"
-              onClick={handleMenuItemClick}
-              className="flex flex-col items-center group cursor-pointer"
-            >
-              <div className="w-16 h-16 rounded-xl bg-white/5 backdrop-blur-sm group-hover:bg-white/10 transition border border-gray-200/20 flex items-center justify-center mb-2">
-                <DocumentTextIcon className="w-8 h-8 text-gray-700" />
-              </div>
-              <span className="text-sm font-medium text-gray-700">Resumes</span>
-            </Link>
-            {/* <Link
-              href="/quests"
-              onClick={handleMenuItemClick}
-              className="flex flex-col items-center group cursor-pointer"
-            >
-              <div className="w-16 h-16 rounded-xl bg-white/5 backdrop-blur-sm group-hover:bg-white/10 transition border border-gray-200/20 flex items-center justify-center mb-2">
-                <TrophyIcon className="w-8 h-8 text-gray-700" />
-              </div>
-              <span className="text-sm font-medium text-gray-700">Quests</span>
-            </Link> */}
+            {NAV_ITEMS.filter((item) => item.showOn.includes("mobile")).map(
+              ({ href, label, icon: Icon }) => (
+                <Link
+                  key={href}
+                  href={href}
+                  onClick={handleMenuItemClick}
+                  className="flex flex-col items-center group cursor-pointer"
+                >
+                  <div className="w-16 h-16 rounded-xl bg-white/5 backdrop-blur-sm group-hover:bg-white/10 transition border border-gray-200/20 flex items-center justify-center mb-2">
+                    <Icon className="w-8 h-8 text-gray-700" />
+                  </div>
+                  <span className="text-sm font-medium text-gray-700">{label}</span>
+                </Link>
+              )
+            )}
           </div>
         </div>
       )}

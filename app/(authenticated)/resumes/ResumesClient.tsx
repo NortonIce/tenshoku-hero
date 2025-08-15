@@ -5,6 +5,7 @@ import Modal from "@/app/components/Modal";
 import IconButton from "@/app/components/buttons/IconButton";
 import type { Resume } from "@/types/Resume";
 import ResumeListElement from "@/app/components/listElements/ResumeListElement";
+import { PrimaryButton } from "@/app/components/buttons/PrimaryButton";
 
 export default function ResumesClient(props: {
   clientId: string;
@@ -119,12 +120,12 @@ export default function ResumesClient(props: {
     <div className="h-screen flex flex-col">
       {/* Header */}
       <div className="flex m-2 justify-start items-center">
-        <IconButton className="mr-2" onClick={() => setIsModalOpen(true)}>
+        <PrimaryButton className="mr-2" onClick={() => setIsModalOpen(true)}>
           Add Resume
-        </IconButton>
-        <IconButton className="mr-2" onClick={() => handleGoogleDriveAuth()}>
+        </PrimaryButton>
+        <PrimaryButton className="mr-2" onClick={() => handleGoogleDriveAuth()}>
           Connect to Google Drive
-        </IconButton>
+        </PrimaryButton>
         {props.isGoogleDriveConnected ? (
           <span className="text-green-600">Google Drive connected</span>
         ) : (

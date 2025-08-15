@@ -4,6 +4,7 @@ import { Application, ApplicationStep } from "@/types/Application";
 import ApplicationModal from "@/app/components/ApplicationModal";
 import { PrimaryButton } from "@/app/components/buttons/PrimaryButton";
 import { ApplicationListElement } from "@/app/components/listElements/ApplicationListElement";
+import StatusBadge from "@/app/components/StatusBadge";
 
 export default function ApplicationsClient({
   initialApplications
@@ -197,7 +198,7 @@ export default function ApplicationsClient({
               clipRule="evenodd"
             />
           </svg>
-          Add new application
+          Add application
         </PrimaryButton>
         <div className="flex gap-2 items-center ml-4 relative">
           <input
@@ -266,7 +267,7 @@ export default function ApplicationsClient({
       </div>
 
       {/* Main content */}
-      <div className="flex-1 min-h-0 overflow-y-auto gap-6">
+      <div className="flex-1 mr-2 ml-2 min-h-0 overflow-y-auto md:overflow-visible gap-6">
         {error ? (
           <div className="flex items-center justify-center h-full">
             <div className="text-red-500">{error}</div>
@@ -278,20 +279,105 @@ export default function ApplicationsClient({
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
               </div>
             ) : (
-              <div className="space-y-4">
-                {filteredApplications.map((application) => (
-                  <ApplicationListElement
-                    key={application.id}
-                    application={application}
-                    onClick={(application) => {
-                      setModalMode("edit");
-                      setSelectedApplication(application);
-                      setIsModalOpen(true);
-                    }}
-                  />
-                ))}
-                <br />
-              </div>
+              <>
+                {/* Mobile: keep cards */}
+                <div className="md:hidden space-y-4">
+                  {filteredApplications.map((application) => (
+                    <ApplicationListElement
+                      key={application.id}
+                      application={application}
+                      alwaysCompact
+                      onClick={(application) => {
+                        setModalMode("edit");
+                        setSelectedApplication(application);
+                        setIsModalOpen(true);
+                      }}
+                    />
+                  ))}
+                  <br />
+                </div>
+
+                {/* Desktop: table */}
+                <div className="hidden md:block">
+                  <div className="overflow-x-auto overflow-y-auto max-h-[70vh] rounded-lg border border-gray-200 bg-white">
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead className="bg-gray-50 sticky top-0 z-10">
+                        <tr>
+                          <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 sticky top-0 z-10">Company</th>
+                          <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 sticky top-0 z-10">Position</th>
+                          <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 sticky top-0 z-10">Job Site</th>
+                          <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 sticky top-0 z-10">Resume</th>
+                          <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 sticky top-0 z-10">Link</th>
+                          <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 sticky top-0 z-10">Status</th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {filteredApplications.map((application) => {
+                          const status = getOverallStatus(application);
+                          return (
+                            <tr
+                              key={application.id}
+                              className="hover:bg-blue-50 cursor-pointer"
+                              onClick={() => {
+                                setModalMode("edit");
+                                setSelectedApplication(application);
+                                setIsModalOpen(true);
+                              }}
+                            >
+                              <td className="px-4 py-3 text-sm font-medium text-gray-900 truncate max-w-[240px]">{application.company}</td>
+                              <td className="px-4 py-3 text-sm text-gray-600 truncate max-w-[280px]">{application.position}</td>
+                              <td className="px-4 py-3 text-sm text-indigo-600 truncate max-w-[220px]">
+                                <a
+                                  href={application.jobSite}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="hover:underline"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  {application.jobSite}
+                                </a>
+                              </td>
+                              <td className="px-4 py-3 text-sm">
+                                {application.resume ? (
+                                  <a
+                                    href={application.resumeLink}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-indigo-600 hover:underline"
+                                    onClick={(e) => e.stopPropagation()}
+                                  >
+                                    Open in Google Drive
+                                  </a>
+                                ) : (
+                                  <span className="text-gray-400">—</span>
+                                )}
+                              </td>
+                              <td className="px-4 py-3 text-sm">
+                                {application.link ? (
+                                  <a
+                                    href={application.link}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-indigo-600 hover:underline"
+                                    onClick={(e) => e.stopPropagation()}
+                                  >
+                                    View Job Posting
+                                  </a>
+                                ) : (
+                                  <span className="text-gray-400">—</span>
+                                )}
+                              </td>
+                              <td className="px-4 py-3 text-sm">
+                                <StatusBadge status={status as any} />
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </>
             )}
           </div>
         )}
