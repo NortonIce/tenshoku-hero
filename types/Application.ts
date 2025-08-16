@@ -11,6 +11,7 @@ export type ApplicationStep = {
   id: string;
   type: ApplicationStepType;
   date: string;
+  dueDate?: string;
   notes?: string;
   order: number;
 };

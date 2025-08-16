@@ -8,6 +8,7 @@ import {
 } from "./errors";
 import { updateApplicationsStats } from "./resumesService";
 import Resume from "@/db/models/Resume";
+import { convertApplicationToDTO } from "./dataConverter";
 
 export async function getApplications(
   userId: string,
@@ -37,25 +38,10 @@ export async function getApplications(
     createdAt: -1,
   });
   const resumes = await Resume.find({ userId });
-  return applications.map((app) => ({
-    id: app._id.toString(),
-    company: app.company,
-    position: app.position,
-    jobSite: app.jobSite,
-    steps: app.steps.map((step: any) => ({
-      id: step._id.toString(),
-      type: step.type,
-      date: step.date.toISOString(),
-      notes: step.notes,
-      order: step.order,
-    })),
-    createdAt: app.createdAt.toISOString(),
-    resume: app.resume,
-    resumeLink: resumes.find((r) => r._id.toString() === app.resume)?.link,
-    coverLetter: app.coverLetter,
-    link: app.link,
-    recruiter: app.recruiter,
-  }));
+  return applications.map((app) => {
+    const resumeLink = resumes.find((r) => r._id.toString() === app.resume)?.link;
+    return convertApplicationToDTO(app, resumeLink);
+  });
 }
 
 export async function addApplication(
@@ -107,22 +93,7 @@ export async function addApplication(
     undefined
   );
 
-  return {
-    id: newApplication._id.toString(),
-    company: newApplication.company,
-    position: newApplication.position,
-    jobSite: newApplication.jobSite,
-    steps: newApplication.steps.map((step: any) => ({
-      id: step._id.toString(),
-      type: step.type,
-      date: step.date.toISOString(),
-      notes: step.notes,
-    })),
-    createdAt: newApplication.createdAt.toISOString(),
-    resume: newApplication.resume,
-    coverLetter: newApplication.coverLetter,
-    recruiter: newApplication.recruiter,
-  };
+  return convertApplicationToDTO(newApplication);
 }
 
 export async function updateApplication(
@@ -173,25 +144,9 @@ export async function updateApplication(
   }
 
   const resumes = await Resume.find({ userId });
+  const resumeLink = resumes.find((r) => r._id.toString() === updatedApplication.resume)?.link;
 
-  return {
-    id: updatedApplication._id.toString(),
-    company: updatedApplication.company,
-    position: updatedApplication.position,
-    jobSite: updatedApplication.jobSite,
-    steps: updatedApplication.steps.map((step: any) => ({
-      id: step._id.toString(),
-      type: step.type,
-      date: step.date.toISOString(),
-      notes: step.notes,
-    })),
-    createdAt: updatedApplication.createdAt.toISOString(),
-    resume: updatedApplication.resume,
-    resumeLink: resumes.find((r) => r._id.toString() === updatedApplication.resume)?.link,
-    coverLetter: updatedApplication.coverLetter,
-    link: updatedApplication.link,
-    recruiter: updatedApplication.recruiter,
-  };
+  return convertApplicationToDTO(updatedApplication, resumeLink);
 }
 
 export async function deleteApplication(

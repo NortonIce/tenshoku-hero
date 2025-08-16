@@ -3,15 +3,26 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 
+interface CalendarEvent {
+  date: string;
+  type: 'step' | 'due';
+  stepType: string;
+  company: string;
+  position: string;
+  notes?: string;
+  applicationId: string;
+}
+
 interface CalendarDay {
   date: Date;
   intensity?: number;
   isCurrentMonth: boolean;
   isToday: boolean;
+  events?: CalendarEvent[];
 }
 
 interface CalendarProps {
-  activeDays?: Array<{ intensity: number; datetime: Date | string }>;
+  activeDays?: Array<{ intensity: number; datetime: Date | string; events?: CalendarEvent[] }>;
   applicationsInPlanning?: Array<{ company: string; link: string; createdAt: Date | string }>;
 }
 
@@ -44,23 +55,31 @@ export default function Calendar({ activeDays = [], applicationsInPlanning = [] 
     today.setHours(0, 0, 0, 0);
     
     // Create a map of active days for quick lookup
-    const activeDayMap = new Map<string, number>();
+    const activeDayMap = new Map<string, { intensity: number; events?: CalendarEvent[] }>();
+    console.log('Calendar received activeDays:', activeDays);
     activeDays.forEach(day => {
       const date = new Date(day.datetime);
       const dateKey = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
-      activeDayMap.set(dateKey, day.intensity);
+      console.log(`Setting active day: ${dateKey} with intensity ${day.intensity}`);
+      activeDayMap.set(dateKey, { intensity: day.intensity, events: day.events });
     });
+    console.log('Active day map:', activeDayMap);
 
     for (let i = 0; i < 42; i++) {
       const date = new Date(firstDayOfCalendar);
       date.setDate(firstDayOfCalendar.getDate() + i);
       
       const dateKey = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
-      const intensity = activeDayMap.get(dateKey);
+      const dayData = activeDayMap.get(dateKey);
+      
+      if (date.getMonth() === month && dayData) {
+        console.log(`Found intensity ${dayData.intensity} for date ${dateKey}`);
+      }
       
       days.push({
         date: new Date(date),
-        intensity,
+        intensity: dayData?.intensity,
+        events: dayData?.events,
         isCurrentMonth: date.getMonth() === month,
         isToday: date.getTime() === today.getTime()
       });
@@ -83,16 +102,16 @@ export default function Calendar({ activeDays = [], applicationsInPlanning = [] 
 
   const getIntensityColor = (intensity?: number) => {
     if (!intensity) return 'bg-gray-50';
-    if (intensity <= 2) return 'bg-green-100';
-    if (intensity <= 4) return 'bg-green-200';
-    if (intensity <= 6) return 'bg-green-300';
-    if (intensity <= 8) return 'bg-green-400';
-    return 'bg-green-500';
+    if (intensity === 1) return 'bg-blue-100';
+    if (intensity === 2) return 'bg-blue-200';
+    if (intensity === 3) return 'bg-blue-300';
+    if (intensity <= 5) return 'bg-blue-400';
+    return 'bg-blue-500';
   };
 
   const getIntensityTextColor = (intensity?: number) => {
     if (!intensity) return 'text-gray-700';
-    if (intensity <= 4) return 'text-gray-700';
+    if (intensity <= 3) return 'text-gray-700';
     return 'text-white';
   };
 
@@ -131,16 +150,21 @@ export default function Calendar({ activeDays = [], applicationsInPlanning = [] 
           <div
             key={index}
             className={`
-              aspect-square flex items-center justify-center text-xs rounded transition-colors cursor-pointer
+              aspect-square flex flex-col items-center justify-center text-xs rounded transition-colors cursor-pointer relative
               ${day.isCurrentMonth ? 'text-gray-900' : 'text-gray-400'}
-              ${day.isToday ? 'ring-1 ring-blue-500' : ''}
+              ${day.isToday ? 'ring-2 ring-purple-500' : ''}
               ${getIntensityColor(day.intensity)}
               ${getIntensityTextColor(day.intensity)}
               hover:bg-gray-100
             `}
-            title={day.intensity ? `Activity intensity: ${day.intensity}` : ''}
+            title={day.events ? `${day.events.length} event(s): ${day.events.map(e => `${e.company} - ${e.stepType}`).join(', ')}` : ''}
           >
-            {day.date.getDate()}
+            <span className="font-medium">{day.date.getDate()}</span>
+            {day.intensity && day.intensity > 1 && (
+              <span className="text-[10px] font-bold mt-0.5">
+                {day.intensity}
+              </span>
+            )}
           </div>
         ))}
       </div>
@@ -174,15 +198,15 @@ export default function Calendar({ activeDays = [], applicationsInPlanning = [] 
       <div className="mt-3 flex items-center justify-center space-x-3 text-xs text-gray-500">
         <div className="flex items-center space-x-1">
           <div className="w-2 h-2 bg-gray-50 rounded"></div>
-          <span>None</span>
+          <span>No events</span>
         </div>
         <div className="flex items-center space-x-1">
-          <div className="w-2 h-2 bg-green-200 rounded"></div>
-          <span>Low</span>
+          <div className="w-2 h-2 bg-blue-200 rounded"></div>
+          <span>1-2 events</span>
         </div>
         <div className="flex items-center space-x-1">
-          <div className="w-2 h-2 bg-green-400 rounded"></div>
-          <span>High</span>
+          <div className="w-2 h-2 bg-blue-400 rounded"></div>
+          <span>3+ events</span>
         </div>
       </div>
     </div>
