@@ -1,11 +1,13 @@
 export type ApplicationStepType =
+  | "Preparation"
   | "Applied"
   | "Recieved Take Home Assignment"
   | "Sent Take Home Assignment"
   | "Interview"
   | "Offer"
   | "Rejected"
-  | "Ignored";
+  | "Ignored"
+  | "Abandoned";
 
 export type ApplicationStep = {
   id: string;

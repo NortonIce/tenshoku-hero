@@ -15,11 +15,13 @@ interface ApplicationModalProps {
   onSubmit: (
     application: Omit<Application, "id" | "createdAt"> | Application
   ) => void;
+  onDelete?: (id: string) => void;
   application?: Application | null; // null for add mode, Application for edit mode
   mode: "add" | "edit";
 }
 
 const stepTypes: ApplicationStepType[] = [
+  "Preparation",
   "Applied",
   "Recieved Take Home Assignment",
   "Sent Take Home Assignment",
@@ -27,6 +29,7 @@ const stepTypes: ApplicationStepType[] = [
   "Offer",
   "Rejected",
   "Ignored",
+  "Abandoned",
 ];
 
 // Hardcoded position suggestions
@@ -60,9 +63,11 @@ export default function ApplicationModal({
   isOpen,
   onClose,
   onSubmit,
+  onDelete,
   application,
   mode,
 }: ApplicationModalProps) {
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [resumeOptions, setResumeOptions] = useState<
     { _id: string; title: string }[]
   >([]);
@@ -132,6 +137,10 @@ export default function ApplicationModal({
       });
     }
   }, [mode, application, resumeOptions]);
+
+  useEffect(() => {
+    if (!isOpen) setConfirmingDelete(false);
+  }, [isOpen]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -233,14 +242,16 @@ export default function ApplicationModal({
     if (!formData.steps.length) return [];
     const lastType = formData.steps[formData.steps.length - 1].type;
     switch (lastType) {
+      case "Preparation":
+        return ["Applied", "Abandoned"];
       case "Applied":
-        return ["Ignored", "Recieved Take Home Assignment", "Interview"];
+        return ["Ignored", "Abandoned", "Recieved Take Home Assignment", "Interview"];
       case "Recieved Take Home Assignment":
-        return ["Sent Take Home Assignment"];
+        return ["Sent Take Home Assignment", "Abandoned"];
       case "Sent Take Home Assignment":
-        return ["Rejected", "Interview"];
+        return ["Rejected", "Interview", "Abandoned"];
       case "Interview":
-        return ["Rejected", "Offer"];
+        return ["Rejected", "Offer", "Abandoned"];
       default:
         return [];
     }
@@ -391,7 +402,7 @@ export default function ApplicationModal({
                   type="button"
                   onClick={() => addQuickStep(type as ApplicationStepType)}
                   className={`inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2
-                    ${type === "Ignored" || type === "Rejected"
+                    ${type === "Ignored" || type === "Rejected" || type === "Abandoned"
                       ? "text-red-700 bg-red-50 hover:bg-red-100 focus:ring-red-500"
                       : "text-green-700 bg-green-50 hover:bg-green-100 focus:ring-green-500"}
                   `}
@@ -498,20 +509,53 @@ export default function ApplicationModal({
           />
         </div>
 
-        <div className="flex justify-end gap-4 pt-4">
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            {mode === "add" ? "Add Application" : "Save Changes"}
-          </button>
+        <div className="flex justify-between items-center pt-4">
+          {mode === "edit" && onDelete && application ? (
+            confirmingDelete ? (
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-red-600">Delete this application?</span>
+                <button
+                  type="button"
+                  onClick={() => onDelete(application.id)}
+                  className="px-3 py-1.5 bg-red-600 text-white text-sm rounded-lg hover:bg-red-700 transition-colors"
+                >
+                  Yes, delete
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setConfirmingDelete(false)}
+                  className="px-3 py-1.5 text-gray-700 bg-gray-100 text-sm rounded-lg hover:bg-gray-200 transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setConfirmingDelete(true)}
+                className="px-4 py-2 text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors"
+              >
+                Delete
+              </button>
+            )
+          ) : (
+            <div />
+          )}
+          <div className="flex gap-4">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              {mode === "add" ? "Add Application" : "Save Changes"}
+            </button>
+          </div>
         </div>
       </form>
     </Modal>

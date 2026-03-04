@@ -47,6 +47,7 @@ export default function ApplicationsClient({
   }, [isStatusPopupOpen]);
 
   const statusOptions = [
+    "Preparation",
     "Applied",
     "Recieved Take Home Assignment",
     "Sent Take Home Assignment",
@@ -54,6 +55,7 @@ export default function ApplicationsClient({
     "Offer",
     "Rejected",
     "Ignored",
+    "Abandoned",
   ];
 
   useEffect(() => {
@@ -137,6 +139,24 @@ export default function ApplicationsClient({
     } catch (err) {
       console.error("Error updating application:", err);
       // You might want to show an error message to the user here
+    }
+  };
+
+  const handleDeleteApplication = async (id: string) => {
+    try {
+      const response = await fetch(`/api/applications?id=${id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete application");
+      }
+
+      setApplications((prev) => prev.filter((app) => app.id !== id));
+      setIsModalOpen(false);
+      setSelectedApplication(null);
+    } catch (err) {
+      console.error("Error deleting application:", err);
     }
   };
 
@@ -266,6 +286,13 @@ export default function ApplicationsClient({
         </div>
       </div>
 
+      {/* Counter */}
+      <div className="mx-2 mb-1 text-sm text-gray-500">
+        {search || statusFilters.length > 0
+          ? `${filteredApplications.length} of ${applications.length} applications`
+          : `${applications.length} application${applications.length !== 1 ? "s" : ""}`}
+      </div>
+
       {/* Main content */}
       <div className="flex-1 mr-2 ml-2 min-h-0 overflow-y-auto md:overflow-visible gap-6">
         {error ? (
@@ -390,6 +417,7 @@ export default function ApplicationsClient({
           setSelectedApplication(null);
         }}
         onSubmit={handleModalSubmit}
+        onDelete={handleDeleteApplication}
         application={selectedApplication}
         mode={modalMode}
       />
