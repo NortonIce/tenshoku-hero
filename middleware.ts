@@ -11,5 +11,6 @@ export const config = {
         "/applications/:path*",
         "/resumes/:path*",
         "/quests/:path*",
+        "/tasks/:path*",
     ],
 }; 

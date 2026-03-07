@@ -31,6 +31,12 @@ const NAV_ITEMS: NavbarItem[] = [
     icon: DocumentTextIcon,
     showOn: ["desktop", "mobile"],
   },
+  {
+    href: "/tasks",
+    label: "Tasks",
+    icon: ChartPieIcon,
+    showOn: ["desktop", "mobile"],
+  },
   { href: "/home", label: "Home", icon: ChartPieIcon, showOn: ["mobile"] },
 ];
 
@@ -54,13 +60,19 @@ export default function Navbar() {
         <div className="flex flex-col space-y-6">
           {NAV_ITEMS.filter((item) => item.showOn.includes("desktop")).map(
             ({ href, label, icon: Icon }) => (
-              <Link key={href} href={href} className="flex flex-col items-center group">
+              <Link
+                key={href}
+                href={href}
+                className="flex flex-col items-center group"
+              >
                 <div className="w-16 h-16 rounded-xl bg-white/5 backdrop-blur-sm group-hover:bg-white/10 transition border border-gray-200/20 flex items-center justify-center mb-2">
                   <Icon className="w-8 h-8 text-gray-700" />
                 </div>
-                <span className="text-sm font-medium text-gray-700">{label}</span>
+                <span className="text-sm font-medium text-gray-700">
+                  {label}
+                </span>
               </Link>
-            )
+            ),
           )}
         </div>
       </nav>
@@ -68,8 +80,9 @@ export default function Navbar() {
       {/* Mobile Menu Button */}
       <button
         onClick={() => setIsMobileMenuOpen(true)}
-        className={`sm:hidden fixed bottom-6 right-6 z-50 bg-white/80 backdrop-blur-md border border-gray-200/40 shadow-lg rounded-full w-16 h-16 flex items-center justify-center cursor-pointer transition-opacity ${isMobileMenuOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'
-          }`}
+        className={`sm:hidden fixed bottom-6 right-6 z-50 bg-white/80 backdrop-blur-md border border-gray-200/40 shadow-lg rounded-full w-16 h-16 flex items-center justify-center cursor-pointer transition-opacity ${
+          isMobileMenuOpen ? "opacity-0 pointer-events-none" : "opacity-100"
+        }`}
         aria-label="Open menu"
       >
         <svg
@@ -121,9 +134,11 @@ export default function Navbar() {
                   <div className="w-16 h-16 rounded-xl bg-white/5 backdrop-blur-sm group-hover:bg-white/10 transition border border-gray-200/20 flex items-center justify-center mb-2">
                     <Icon className="w-8 h-8 text-gray-700" />
                   </div>
-                  <span className="text-sm font-medium text-gray-700">{label}</span>
+                  <span className="text-sm font-medium text-gray-700">
+                    {label}
+                  </span>
                 </Link>
-              )
+              ),
             )}
           </div>
         </div>
