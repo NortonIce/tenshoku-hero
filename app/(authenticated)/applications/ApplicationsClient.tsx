@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import { Application, ApplicationStep } from "@/types/Application";
+import { Resume } from "@/types/Resume";
 import ApplicationModal from "@/app/components/ApplicationModal";
 import { PrimaryButton } from "@/app/components/buttons/PrimaryButton";
 import { ApplicationListElement } from "@/app/components/listElements/ApplicationListElement";
@@ -23,6 +24,7 @@ export default function ApplicationsClient({
   const [isStatusPopupOpen, setIsStatusPopupOpen] = useState(false);
   const statusButtonRef = useRef<HTMLButtonElement | null>(null);
   const statusPopupRef = useRef<HTMLDivElement | null>(null);
+  const [resumeMap, setResumeMap] = useState<Record<string, string>>({});
 
   // Close popup on outside click
   useEffect(() => {
@@ -61,7 +63,21 @@ export default function ApplicationsClient({
   useEffect(() => {
     setApplications(initialApplications);
     fetchApplications();
+    fetchResumes();
   }, [initialApplications]);
+
+  const fetchResumes = async () => {
+    try {
+      const response = await fetch("/api/resumes");
+      if (!response.ok) return;
+      const data: Resume[] = await response.json();
+      const map: Record<string, string> = {};
+      data.forEach((r) => { if (r._id) map[r._id] = r.title; });
+      setResumeMap(map);
+    } catch (err) {
+      console.error("Error fetching resumes:", err);
+    }
+  };
 
   const fetchApplications = async () => {
     try {
@@ -373,7 +389,7 @@ export default function ApplicationsClient({
                                     className="text-indigo-600 hover:underline"
                                     onClick={(e) => e.stopPropagation()}
                                   >
-                                    Open in Google Drive
+                                    {resumeMap[application.resume] ?? application.resume}
                                   </a>
                                 ) : (
                                   <span className="text-gray-400">—</span>

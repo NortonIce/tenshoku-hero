@@ -8,6 +8,7 @@ import {
   DocumentTextIcon,
   ChartPieIcon,
   HomeIcon,
+  MapIcon,
 } from "@heroicons/react/24/outline";
 
 type NavbarItem = {
@@ -35,6 +36,12 @@ const NAV_ITEMS: NavbarItem[] = [
     href: "/tasks",
     label: "Tasks",
     icon: ChartPieIcon,
+    showOn: ["desktop", "mobile"],
+  },
+  {
+    href: "/roadmap",
+    label: "Roadmap",
+    icon: MapIcon,
     showOn: ["desktop", "mobile"],
   },
   { href: "/home", label: "Home", icon: ChartPieIcon, showOn: ["mobile"] },
