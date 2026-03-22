@@ -52,7 +52,7 @@ export default function HomeClient({ initialSchedule }: HomeClientProps) {
   }, [schedule]);
 
   return (
-    <div className="h-screen flex flex-col bg-gray-50">
+    <div className="h-full flex flex-col bg-gray-50">
       {/* Scrollable Content */}
       <div className="flex-1 overflow-y-auto">
         <div className="p-4">

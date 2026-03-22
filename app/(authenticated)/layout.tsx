@@ -1,5 +1,4 @@
 import Navbar from "../components/Navbar";
-import TopBar from "../components/TopBar";
 
 export default function AuthenticatedLayout({
   children,
@@ -7,10 +6,9 @@ export default function AuthenticatedLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen">
+    <div className="flex flex-col h-dvh overflow-hidden">
       <Navbar />
-      <main className="flex-1 flex flex-col h-dvh overflow-hidden">
-        <TopBar />
+      <main className="flex-1 overflow-hidden flex flex-col">
         {children}
       </main>
     </div>

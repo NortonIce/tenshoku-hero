@@ -214,7 +214,7 @@ export default function ApplicationsClient({
   return (
     <div className="flex flex-col flex-1 min-h-0">
       {/* Header */}
-      <div className="flex m-2 justify-between items-center">
+      <div className="flex px-4 sm:px-6 lg:px-10 2xl:px-16 py-2 justify-between items-center">
         <PrimaryButton
           onClick={() => {
             setModalMode("add");
@@ -242,13 +242,13 @@ export default function ApplicationsClient({
             placeholder="Search by company name..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="mt-1 block px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="block px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             style={{ minWidth: 220 }}
           />
           <button
             ref={statusButtonRef}
             type="button"
-            className="mt-1 block px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 flex items-center gap-2"
+            className="block px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 flex items-center gap-2"
             onClick={() => setIsStatusPopupOpen((v) => !v)}
           >
             <span>Status{statusFilters.length > 0 ? ` (${statusFilters.length})` : ""}</span>
@@ -303,14 +303,23 @@ export default function ApplicationsClient({
       </div>
 
       {/* Counter */}
-      <div className="mx-2 mb-1 text-sm text-gray-500">
-        {search || statusFilters.length > 0
-          ? `${filteredApplications.length} of ${applications.length} applications`
-          : `${applications.length} application${applications.length !== 1 ? "s" : ""}`}
+      <div className="px-4 sm:px-6 lg:px-10 2xl:px-16 mb-1">
+        <span className="text-sm text-gray-500">
+          {search || statusFilters.length > 0
+            ? `${filteredApplications.length} of ${applications.length} applications`
+            : `${applications.length} application${applications.length !== 1 ? "s" : ""}`}
+          {(() => {
+            const counts = statusOptions
+              .map((status) => ({ status, count: applications.filter((a) => getOverallStatus(a) === status).length }))
+              .filter(({ count }) => count > 0);
+            if (counts.length === 0) return null;
+            return ` (${counts.map(({ status, count }) => `${status}: ${count}`).join(", ")})`;
+          })()}
+        </span>
       </div>
 
       {/* Main content */}
-      <div className="flex-1 mr-2 ml-2 min-h-0 overflow-y-auto md:overflow-visible gap-6">
+      <div className="flex-1 px-4 sm:px-6 lg:px-10 2xl:px-16 min-h-0 overflow-y-auto md:overflow-visible gap-6">
         {error ? (
           <div className="flex items-center justify-center h-full">
             <div className="text-red-500">{error}</div>

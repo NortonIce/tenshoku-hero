@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import Modal from "@/app/components/Modal";
 import IconButton from "@/app/components/buttons/IconButton";
 import type { Resume } from "@/types/Resume";
-import ResumeListElement from "@/app/components/listElements/ResumeListElement";
 import { PrimaryButton } from "@/app/components/buttons/PrimaryButton";
 
 export default function ResumesClient(props: {
@@ -117,30 +116,39 @@ export default function ResumesClient(props: {
   };
 
   return (
-    <div className="h-screen flex flex-col">
+    <div className="flex flex-col flex-1 min-h-0">
       {/* Header */}
-      <div className="flex m-2 justify-start items-center">
-        <PrimaryButton className="mr-2" onClick={() => setIsModalOpen(true)}>
-          Add Resume
-        </PrimaryButton>
-        <PrimaryButton className="mr-2" onClick={() => handleGoogleDriveAuth()}>
-          Connect to Google Drive
-        </PrimaryButton>
-        {props.isGoogleDriveConnected ? (
-          <span className="text-green-600">Google Drive connected</span>
-        ) : (
-          <span className="text-red-600">Google Drive not connected</span>
-        )}
+      <div className="flex px-4 sm:px-6 lg:px-10 2xl:px-16 py-3 justify-between items-center">
+        <div className="flex items-center gap-2">
+          <PrimaryButton onClick={() => setIsModalOpen(true)}>
+            Add Resume
+          </PrimaryButton>
+          <PrimaryButton onClick={() => handleGoogleDriveAuth()}>
+            Connect to Google Drive
+          </PrimaryButton>
+          {props.isGoogleDriveConnected ? (
+            <span className="text-green-600 text-sm">Google Drive connected</span>
+          ) : (
+            <span className="text-red-600 text-sm">Google Drive not connected</span>
+          )}
+        </div>
+      </div>
+
+      {/* Counter */}
+      <div className="px-4 sm:px-6 lg:px-10 2xl:px-16 mb-1">
+        <span className="text-sm text-gray-500">
+          {resumes.length} resume{resumes.length !== 1 ? "s" : ""}
+        </span>
       </div>
 
       {/* Main content */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 px-4 sm:px-6 lg:px-10 2xl:px-16 min-h-0 overflow-y-auto">
         {isLoading && resumes.length === 0 ? (
           <div className="flex items-center justify-center h-48">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
           </div>
         ) : resumes.length === 0 ? (
-          <div className="bg-white rounded-lg shadow p-6 text-center m-2">
+          <div className="bg-white rounded-lg shadow p-6 text-center">
             <h3 className="mt-2 text-sm font-semibold text-gray-900">
               No resumes yet
             </h3>
@@ -149,17 +157,45 @@ export default function ResumesClient(props: {
             </p>
           </div>
         ) : (
-          <div className="space-y-4">
-            {resumes.map((resume) => (
-              <ResumeListElement
-                key={resume._id}
-                resume={resume}
-                onClick={() => {
-                  // Handle resume click if needed
-                }}
-                selectedResumeId={undefined}
-              /> // Replace with actual selected ID if needed
-            ))}
+          <div className="overflow-x-auto overflow-y-auto max-h-[70vh] rounded-lg border border-gray-200 bg-white">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50 sticky top-0 z-10">
+                <tr>
+                  <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Title</th>
+                  <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Created</th>
+                  <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Used</th>
+                  <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Link</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {resumes.map((resume) => {
+                  const usedTimes = resume.applications
+                    ? Object.values(resume.applications).reduce((sum, n) => sum + (n || 0), 0)
+                    : 0;
+                  return (
+                    <tr key={resume._id} className="hover:bg-blue-50">
+                      <td className="px-4 py-3 text-sm font-medium text-gray-900">{resume.title}</td>
+                      <td className="px-4 py-3 text-sm text-gray-500 whitespace-nowrap">{new Date(resume.createdAt).toLocaleDateString()}</td>
+                      <td className="px-4 py-3 text-sm text-gray-600">{usedTimes} times</td>
+                      <td className="px-4 py-3 text-sm">
+                        {resume.link ? (
+                          <a
+                            href={resume.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-indigo-600 hover:underline"
+                          >
+                            View in Google Drive
+                          </a>
+                        ) : (
+                          <span className="text-gray-400">—</span>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
         )}
       </div>
