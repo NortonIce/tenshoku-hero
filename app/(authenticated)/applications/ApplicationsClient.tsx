@@ -351,6 +351,7 @@ export default function ApplicationsClient({
                           <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 sticky top-0 z-10">Job Site</th>
                           <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 sticky top-0 z-10">Resume</th>
                           <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 sticky top-0 z-10">Link</th>
+                          <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 sticky top-0 z-10">Last Update</th>
                           <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 sticky top-0 z-10">Status</th>
                         </tr>
                       </thead>
@@ -409,6 +410,13 @@ export default function ApplicationsClient({
                                 ) : (
                                   <span className="text-gray-400">—</span>
                                 )}
+                              </td>
+                              <td className="px-4 py-3 text-sm text-gray-500 whitespace-nowrap">
+                                {new Date(
+                                  application.steps?.length
+                                    ? application.steps.slice().sort((a, b) => b.order - a.order)[0].date
+                                    : application.createdAt
+                                ).toLocaleDateString()}
                               </td>
                               <td className="px-4 py-3 text-sm">
                                 <StatusBadge status={status as any} />
